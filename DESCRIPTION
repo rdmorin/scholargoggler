@@ -1,12 +1,25 @@
 Package: scholargoggler
-Title: What the Package Does (One Line, Title Case)
+Title: A shiny app that generates word clouds from Google Scholar profiles
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Ryan", "Morin", , "rdmorin@sfu.ca", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-2932-7800"))
+Description: This is the code for the Shiny app known as Scholar Goggler. The output of this site is a word cloud that summarizes the academic publications from a Google Scholar profile. It works by obtaining a Google Scholar ID from the user and, via the Google Scholar API, gets the titles from the publications from that author. The words are tabulated by frequency and represented as a word cloud. 
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+Imports: 
+    dplyr,
+    htmlwidgets,
+    MetBrewer,
+    scholar,
+    shiny,
+    tm,
+    webshot2,
+    wesanderson,
+    wordcloud2
+Remotes:
+    morinlab/moroncolours,
+    BlakeRMills/MetBrewer
+
