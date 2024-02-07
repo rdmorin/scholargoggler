@@ -18,7 +18,6 @@ terms = "EZH2,MYC,T-cell,B-cell,HIV-1,UVA,UVB,COVID-19,BCL2,microRNA,miRNA,mRNA,
 deps = "alterations,methods,genes,variants,lymphomas,mutations,sample,tumours,tumors"
 default_id = "IDau0mkAAAAJ"
 # load all the colour palettes. If you want to add new ones, incorporate them into colours.R
-#cols = scholargoggler::get_all_colours()
 
 
 
@@ -28,7 +27,7 @@ adjustcolor_v = Vectorize( adjustcolor )
 #' Launches the Shiny app
 #'
 #' @return nothing
-#' 
+#'
 #' @import dplyr stringr
 #'
 #' @examples
@@ -47,7 +46,7 @@ scholarGoggler <- function(...){
                 value=default_id),
       actionButton("button","Cloud Me"),
       h5("Example:"),
-      h5("https://scholar.google.com/citations?user=THIS_PART_IS_THE_ID&hl=en"),      
+      h5("https://scholar.google.com/citations?user=THIS_PART_IS_THE_ID&hl=en"),
       radioButtons("cloud_type","Visualization type",choices=c("Titles","Journals"),inline=T),
       sliderInput("range",
                   "Start and end date of articles to use",
@@ -59,7 +58,7 @@ scholarGoggler <- function(...){
                 choices = c("white","greyish","twilight","black","transparent"),
                 selected="black",inline=TRUE),
       selectInput("fancycolour","Use fancy colour scheme",
-                   choices=c("black-on-white",get_colour_names()),
+                   choices=c("white-on-black",get_colour_names()),
                    selected="Hokusai1"),
       checkboxInput("dillute","Transparency based on frequency?",value=TRUE),
       selectInput("font_family","Font",choices=c("Helvetica","AppleGothic","Optima","Luminari",
@@ -85,9 +84,9 @@ scholarGoggler <- function(...){
       textInput("depluralize","Depluralize and collapse these words",
                	value="tumors,patients,cells")
       #submitButton(text = "Cloud me")
-      
+
     ),
-    
+
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(id="main",selected = "About",
@@ -108,18 +107,18 @@ scholarGoggler <- function(...){
 </form><br>')))
       )
     )
-  ), 
+  ),
   hr(),
   h5("About this page:"),
   print("Created and maintained by Ryan Morin (rdmorin@sfu.ca); @morinryan morinryan.bsky.social")
-  
+
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
   #observeEvent(input$id,{
   #  updateTabsetPanel(session,inputId="main",selected="About")
-  #})  
+  #})
   check_id = reactive({
     this_id = input$id
   #  updateTabsetPanel(session,inputId="main",selected="About")
@@ -179,7 +178,7 @@ server <- function(input, output, session) {
       dplyr::select(word,freq)
     df = arrange(df,desc(freq))
     df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
-    
+
     keep_uppercase = ""
     if(!input$keep_uppercase==""){
       all_keep = paste(input$keep_uppercase,terms,sep=",")
@@ -191,9 +190,9 @@ server <- function(input, output, session) {
   })
 
   get_scholar = reactive({
-    
+
     clean_id = input$id
-    clean_id= str_remove(input$id,".+user=")    
+    clean_id= str_remove(input$id,".+user=")
     scholar::get_profile(clean_id)
   })
   observeEvent(input$button, {
@@ -202,13 +201,13 @@ server <- function(input, output, session) {
       get_scholar()$name
     })
     output$scholar_h = renderText({
-    
+
       get_scholar()$h_index
     })
   })
 
-  
-  
+
+
   make_cloud = reactive({
 
     if(input$cloud_type == "Titles"){
@@ -229,8 +228,8 @@ server <- function(input, output, session) {
       if(bgcolour == "transparent"){
         bgcolour = "#66000000"
       }
-      
-      if(input$fancycolour=="black-on-white"){
+
+      if(input$fancycolour=="white-on-black"){
             colour = "white"
             bgcolour = "black"
             ai$colour = colour
@@ -243,6 +242,7 @@ server <- function(input, output, session) {
             }
             colour = unname(ai$colour)
       }else{
+        cols = scholargoggler::get_all_colours()
         if(input$fancycolour %in% names(cols)){
           colour = sample(cols[[input$fancycolour]],nrow(ai),replace=T)
         }else{
@@ -259,7 +259,7 @@ server <- function(input, output, session) {
         colour = unname(ai$colour)
         output$tabular = renderTable(ai,rownames = F)
       }
-      
+
       if(input$rotation=="Any Rotation"){
         wordcloud2(ai,
                    fontFamily = input$font_family,
@@ -287,9 +287,9 @@ server <- function(input, output, session) {
                    color=colour,
                    shape=input$shape,size=minsize,minRotation=pi/2.01,maxRotation=pi/1.99,ellipticity=input$ellipticity)
       }
-      
+
     }else if(input$cloud_type=="Journals"){
-      
+
       ai = count_journals()
       minsize = input$zoomout
       print(head(ai))
@@ -322,6 +322,7 @@ server <- function(input, output, session) {
         colour = unname(ai$colour)
         ai$colour = colour
       }else{
+        cols = scholargoggler::get_all_colours()
         if(input$fancycolour %in% names(cols)){
           colour = sample(cols[[input$fancycolour]],nrow(ai),replace=T)
         }else{
@@ -338,7 +339,7 @@ server <- function(input, output, session) {
         colour = unname(ai$colour)
         output$tabular = renderTable(ai,rownames = F)
       }
-      
+
       if(input$rotation=="Any Rotation"){
         wordcloud2(ai,
                    fontFamily = input$font_family,
@@ -404,7 +405,7 @@ server <- function(input, output, session) {
     alttext
     })
   })
-  
+
  }
  # Run the application
  shinyApp(ui = ui, server = server)
