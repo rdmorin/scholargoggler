@@ -6,8 +6,12 @@ This R package will run a Shiny app that automatically generates word clouds usi
 
 ### Option 1
 
+First, install the package and its dependencies:
 ```
 devtools::install_github("rdmorin/scholargoggler.git")
+```
+Then launch the Shiny app:
+```
 scholarGoggler()
 ```
 
