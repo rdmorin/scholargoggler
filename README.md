@@ -11,8 +11,9 @@ First, install the package and its dependencies:
 ```
 devtools::install_github("rdmorin/scholargoggler")
 ```
-Then launch the Shiny app:
+Then load the library and launch the Shiny app:
 ```
+library(scholargoggler)
 scholarGoggler()
 ```
 
