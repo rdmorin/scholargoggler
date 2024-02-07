@@ -9,7 +9,7 @@ This R package will run a [Shiny](https://shiny.posit.co/) app that automaticall
 
 First, install the package and its dependencies:
 ```
-devtools::install_github("rdmorin/scholargoggler.git")
+devtools::install_github("rdmorin/scholargoggler")
 ```
 Then launch the Shiny app:
 ```
