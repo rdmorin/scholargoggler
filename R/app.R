@@ -14,7 +14,6 @@ library(MetBrewer)
 library(wesanderson)
 
 #some global variables and settings
-url <- "https://twitter.com/intent/tweet?text=Look%20what%20I%20made%20from%20my%20Google%20Scholar%20profile%20with%20the%20Scholar%20Goggler%20app&url=https://scholargoggler.com"
 terms = "EZH2,MYC,T-cell,B-cell,HIV-1,UVA,UVB,COVID-19,BCL2,microRNA,miRNA,mRNA,DLBCL,siRNA"
 deps = "alterations,methods,genes,variants,lymphomas,mutations,sample,tumours,tumors"
 default_id = "IDau0mkAAAAJ"
@@ -33,7 +32,7 @@ adjustcolor_v = Vectorize( adjustcolor )
 #' @import dplyr stringr
 #'
 #' @examples
-myApp <- function(...){
+scholarGoggler <- function(...){
  ui <- fluidPage(
   # Application title
   titlePanel(HTML("<a href=http://scholargoggler.com>Scholar Goggler</a>"),windowTitle="Where scholars go to google themselves"),
@@ -106,7 +105,7 @@ myApp <- function(...){
 <input type="hidden" name="hosted_button_id" value="WRRPVG5NDUXXN" />
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_CA/i/scr/pixel.gif" width="5" height="5" />
-</form><br>')),tags$a(href=url, "Tweet", class="twitter-share-button"),includeScript("http://platform.twitter.com/widgets.js"))
+</form><br>')))
       )
     )
   ), 
