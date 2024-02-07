@@ -18,6 +18,7 @@ Imports:
     tm,
     webshot2,
     wesanderson,
+    moroncolours,
     wordcloud2
 Remotes:
     morinlab/moroncolours,
