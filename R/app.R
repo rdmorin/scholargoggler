@@ -28,7 +28,7 @@ adjustcolor_v = Vectorize( adjustcolor )
 #'
 #' @return nothing
 #' @export
-#' @import dplyr stringr
+#' @import dplyr stringr shiny wordcloud2
 #'
 #' @examples
 scholarGoggler <- function(...){
