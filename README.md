@@ -37,10 +37,6 @@ scholarGoggler()
 
 If you find this project useful please consider donating a small amount to help offset the costs of hosting the Scholar Goggler service. 
 
-[
-  ![Donate with PayPal]
-  (https://raw.githubusercontent.com/stefan-niedermann/paypal-donate-button/master/paypal-donate-button.png)
-]
-(https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WRRPVG5NDUXXN)
+[Donate with PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WRRPVG5NDUXXN)
 
 
