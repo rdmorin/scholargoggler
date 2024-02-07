@@ -53,7 +53,6 @@ scholarGoggler <- function(...){
                   min = 1969,
                   max = 2025,
                   value = c(1999,2024),sep=""),
-      #textInput("bgcolour","Background",value="black"),
       radioButtons("bgcolour","Background",
                 choices = c("white","greyish","twilight","black","transparent"),
                 selected="black",inline=TRUE),
@@ -83,13 +82,12 @@ scholarGoggler <- function(...){
       textInput("keep_uppercase","Repair uppercase",value="DNA,RNA,cDNA"),
       textInput("depluralize","Depluralize and collapse these words",
                	value="tumors,patients,cells")
-      #submitButton(text = "Cloud me")
 
     ),
 
     # Show a plot of the generated distribution
     mainPanel(
-      tabsetPanel(id="main",selected = "About",
+      tabsetPanel(id="main",selected = "Word Cloud",
         tabPanel("Word Cloud", wordcloud2Output("cloud",width = "1000px", height = "1000px"),downloadButton("Download PNG",outputId= "savecloud")),
         tabPanel("Alt Text", textOutput("alt")),
         tabPanel("Tabular result",tableOutput("tabular")),
