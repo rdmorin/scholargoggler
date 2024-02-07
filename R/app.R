@@ -27,7 +27,7 @@ adjustcolor_v = Vectorize( adjustcolor )
 #' Launches the Shiny app
 #'
 #' @return nothing
-#'
+#' @export
 #' @import dplyr stringr
 #'
 #' @examples
