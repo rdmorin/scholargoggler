@@ -28,7 +28,7 @@ adjustcolor_v = Vectorize( adjustcolor )
 #'
 #' @return nothing
 #' @export
-#' @import dplyr stringr shiny wordcloud2
+#' @import dplyr stringr shiny wordcloud2 scholar
 #'
 #' @examples
 scholarGoggler <- function(...){
@@ -151,7 +151,7 @@ server <- function(input, output, session) {
     }
     clean_id = input$id
     clean_id= str_remove(input$id,".+user=")
-    pubz=get_publications(clean_id) %>% dplyr::filter(year > input$range[1], year < input$range[2])
+    pubz=scholar::get_publications(clean_id) %>% dplyr::filter(year > input$range[1], year < input$range[2])
     message(paste("SCHOLAR:",clean_id,Sys.time()))
     cat(paste("SCHOLAR",clean_id,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
     message(paste("NAME:",get_scholar()$name))
