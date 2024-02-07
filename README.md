@@ -5,7 +5,7 @@ This R package will run a standalone version of the [Shiny](https://shiny.posit.
 
 ## Installation
 
-Using this app requires a relatively recent installation of R and Rstudio and a general understanding of how to run R commands.
+**Using this app requires a relatively recent installation of R and Rstudio and a general understanding of how to run R commands.**
 
 ### Option 1
 
