@@ -2,5 +2,6 @@
 
 export(get_all_colours)
 export(get_colour_names)
+export(scholarGoggler)
 import(dplyr)
 import(stringr)
