@@ -1,3 +1,3 @@
 # Scholar Goggler
 
-This R package will run the shiny app that generates word clouds from a Google Scholar profile [Scholar Goggler](https://scholargoggler.com/)
+This R package will run a Shiny app that automatically generates word clouds using information it pulls from any public Google Scholar profile. The public version of this app and its relatives can be found at the Scholar Goggler [homepage](https://scholargoggler.com/) . 
