@@ -53,7 +53,6 @@ scholarGoggler <- function(...){
                   min = 1969,
                   max = 2025,
                   value = c(1999,2024),sep=""),
-      #textInput("bgcolour","Background",value="black"),
       radioButtons("bgcolour","Background",
                 choices = c("white","greyish","twilight","black","transparent"),
                 selected="black",inline=TRUE),
@@ -84,13 +83,12 @@ scholarGoggler <- function(...){
       textInput("keep_uppercase","Repair uppercase",value="DNA,RNA,cDNA"),
       textInput("depluralize","Depluralize and collapse these words",
                	value="tumors,patients,cells")
-      #submitButton(text = "Cloud me")
 
     ),
 
     # Show a plot of the generated distribution
     mainPanel(
-      tabsetPanel(id="main",selected = "About",
+      tabsetPanel(id="main",selected = "Word Cloud",
         tabPanel("Word Cloud", wordcloud2Output("cloud",width = "1000px", height = "1000px"),downloadButton("Download PNG",outputId= "savecloud")),
         tabPanel("Alt Text", textOutput("alt")),
         tabPanel("Tabular result",tableOutput("tabular")),
@@ -117,15 +115,10 @@ scholarGoggler <- function(...){
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-  #observeEvent(input$id,{
-  #  updateTabsetPanel(session,inputId="main",selected="About")
-  #})
   check_id = reactive({
     this_id = input$id
-  #  updateTabsetPanel(session,inputId="main",selected="About")
   })
   count_journals = reactive({
-    #pubz=get_publications(input$id)
     clean_id = input$id
     clean_id= stringr::str_remove(input$id,".+user=")
     pubz=scholar::get_publications(clean_id) %>% dplyr::filter(year > input$range[1], year < input$range[2])
@@ -191,7 +184,6 @@ server <- function(input, output, session) {
   })
 
   get_scholar = reactive({
-
     clean_id = input$id
     clean_id= str_remove(input$id,".+user=")
     scholar::get_profile(clean_id)
@@ -206,8 +198,6 @@ server <- function(input, output, session) {
       get_scholar()$h_index
     })
   })
-
-
 
   make_cloud = reactive({
 
@@ -299,12 +289,10 @@ server <- function(input, output, session) {
                    color=colour,
                    shape=input$shape,size=minsize,minRotation=pi/2.01,maxRotation=pi/1.99,ellipticity=input$ellipticity)
       }
-
     }else if(input$cloud_type=="Journals"){
 
       ai = count_journals()
       minsize = input$zoomout
-      print(head(ai))
       if(!input$dropwords==""){
         removeme = unlist(strsplit(input$dropwords,","))
         ai = dplyr::filter(ai,!word %in% removeme)
@@ -393,7 +381,6 @@ server <- function(input, output, session) {
       }
     }
   })
-#  observeEvent({
   observeEvent(input$button,{
     updateTabsetPanel(session,"main",selected="About")
     output$cloud = renderWordcloud2({
