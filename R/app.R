@@ -73,7 +73,8 @@ scholarGoggler <- function(...){
                              "pentagon",
                              "star"),selected="pentagon"),
       radioButtons("rotation","Limit Rotation",choices=c("No Rotation",
-                                                         "Any Rotation",
+                                                         "A bit of rotation",
+                                                         "Ridiculous Rotation",
                                                          "45 degrees","90 degrees"),inline=T,selected="45 degrees"),
       sliderInput("ellipticity","Ellipticity (higher is rounder)",value=1,min=0.2,max=1),
       sliderInput("zoomout","Zoom",value=0.92,min=0.1,max=1),
@@ -260,13 +261,24 @@ server <- function(input, output, session) {
         output$tabular = renderTable(ai,rownames = F)
       }
 
-      if(input$rotation=="Any Rotation"){
+      if(input$rotation=="Ridiculous Rotation"){
+        wordcloud2(arrange(ai,freq),
+                   fontFamily = input$font_family,
+                   backgroundColor=bgcolour,
+                   color=rev(colour),rotateRatio = 1,
+                   
+                   shape=input$shape,size=minsize,
+                   ellipticity=input$ellipticity)
+      }else if(input$rotation=="A bit of rotation"){
         wordcloud2(ai,
                    fontFamily = input$font_family,
                    backgroundColor=bgcolour,
                    color=colour,
                    shape=input$shape,size=minsize,
-                   ellipticity=input$ellipticity)
+                   ellipticity=input$ellipticity,
+                   rotationSteps = 4,
+                   minRotation=pi/5,
+                   maxRotation=pi/7)
       }else if(input$rotation=="No Rotation"){
         wordcloud2(ai,
                    fontFamily = input$font_family,
@@ -340,13 +352,23 @@ server <- function(input, output, session) {
         output$tabular = renderTable(ai,rownames = F)
       }
 
-      if(input$rotation=="Any Rotation"){
+      if(input$rotation=="Ridiculous Rotation"){
         wordcloud2(ai,
                    fontFamily = input$font_family,
                    backgroundColor=bgcolour,
                    color=colour,
                    shape=input$shape,size=minsize,
                    ellipticity=input$ellipticity)
+      }else if(input$rotation=="A bit of rotation"){
+        wordcloud2(ai,
+                   fontFamily = input$font_family,
+                   backgroundColor=bgcolour,
+                   color=colour,
+                   shape=input$shape,size=minsize,
+                   ellipticity=input$ellipticity,
+                   #rotationSteps = 4,
+                   minRotation=pi/5,
+                   maxRotation=pi/7)
       }else if(input$rotation=="No Rotation"){
         wordcloud2(ai,
                    fontFamily = input$font_family,
@@ -366,6 +388,8 @@ server <- function(input, output, session) {
                    backgroundColor=bgcolour,
                    color=colour,
                    shape=input$shape,size=minsize,minRotation=pi/2.01,maxRotation=pi/1.99,ellipticity=input$ellipticity)
+      }else{
+        print("Error: unexpected option encountered")
       }
     }
   })
