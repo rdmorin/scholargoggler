@@ -97,7 +97,7 @@ scholarGoggler <- function(...){
                     tabPanel("Alt Text", textOutput("alt")),
                     tabPanel("Tabular result",tableOutput("tabular")),
                     tabPanel("About",
-                             tags$div(HTML('<h2>Recent improvements:</></h2><h4><ul>
+                             tags$div(HTML('<h2>News:</></h2><h4><ul>
 <li>Error about too many users - this is the result of an influx of new users. Please be patient and try back later if you experience this issue</li>
 <li>New gallery and FAQ <a href=https://scholargoggler.com/faq>here</a></li>
 <li>Other flavours of the app for PubMed and Semantic Scholar available <a href=https://scholargoggler.com>here</a></li>
