@@ -80,6 +80,29 @@ get_all_colours = function(){
   return(cols)
 }
 
+#' Convert a coolors.co URL into a vector of hex codes
+#'
+#' @param cooler_url
+#'
+#' @return a vector of hex codes
+#' @export
+#'
+#' @examples
+coolor_colour = function(cooler_url){
+  #e.g.
+  # https://coolors.co/87bcde-805e73-4e4d5c-2d4654-243b4a
+  if(!grepl("^https://coolors.co/",cooler_url)){
+    stop("this only works with a coolors.co palette URL")
+  }
+  cooler_url = str_remove(cooler_url,"https://coolors.co/")
+  chunks = unlist(str_split(cooler_url,"-"))
+  chunks = unlist(lapply(chunks,function(x){paste0("#",x)}))
+  #sanity check that the result makes sense (i.e. it wasn't a garbled URL)
+  print(paste0("COOLER:",paste0(chunks,collapse = ",")))
+  stopifnot(length(chunks) == 5,all(str_length(chunks)==7))
+  return(chunks)
+}
+
 #' Get just the names of all available colour palettes
 #'
 #' @return A vector of palette names that are available

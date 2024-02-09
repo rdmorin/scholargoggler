@@ -84,7 +84,9 @@ scholarGoggler <- function(...){
         textInput("dropwords","Remove these words",value="however,also"),
         textInput("keep_uppercase","Repair uppercase",value="DNA,RNA,cDNA"),
         textInput("depluralize","Depluralize and collapse these words",
-                  value="tumors,patients,cells")
+                  value="tumors,patients,cells"),
+        textInput("coolor","Use custom palette",placeholder="https://coolors.co/df9a57-fc7a57-fcd757-eefc57-5e5b52"),
+        h5("Enter a complete URL from coolors.co")
 
       ),
 
@@ -221,8 +223,10 @@ scholarGoggler <- function(...){
         if(bgcolour == "transparent"){
           bgcolour = "#66000000"
         }
-
-        if(input$fancycolour=="white-on-black"){
+        if(input$coolor != ""){
+          custom_set = coolor_colour(input$coolor)
+          colour = sample(custom_set,nrow(ai),replace=T)
+        }else if(input$fancycolour=="white-on-black"){
           colour = "white"
           bgcolour = "black"
           ai$colour = colour
