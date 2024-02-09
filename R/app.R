@@ -92,12 +92,13 @@ scholarGoggler <- function(...){
 
       # Show a plot of the generated distribution
       mainPanel(
-        tabsetPanel(id="main",selected = "Word Cloud",
+        tabsetPanel(id="main",selected = "About",
                     tabPanel("Word Cloud", wordcloud2Output("cloud",width = "1000px", height = "1000px"),downloadButton("Download PNG",outputId= "savecloud")),
                     tabPanel("Alt Text", textOutput("alt")),
                     tabPanel("Tabular result",tableOutput("tabular")),
                     tabPanel("About",
                              tags$div(HTML('<h2>Recent improvements:</></h2><h4><ul>
+<li>Error about too many users - this is the result of an influx of new users. Please be patient and try back later if you experience this issue</li>
 <li>New gallery and FAQ <a href=https://scholargoggler.com/faq>here</a></li>
 <li>Other flavours of the app for PubMed and Semantic Scholar available <a href=https://scholargoggler.com>here</a></li>
 <li>Specify any plural words you want grouped with their singular equivalent</li>
