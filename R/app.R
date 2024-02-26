@@ -32,7 +32,9 @@ adjustcolor_v = Vectorize( adjustcolor )
 #'
 #' @examples
 scholarGoggler <- function(...){
-  ui <- fluidPage(
+
+  ui <- function(request){
+    fluidPage(
     # Application title
     titlePanel(HTML("<a href=http://scholargoggler.com>Scholar Goggler</a>"),windowTitle="Where scholars go to google themselves"),
     tags$head(
@@ -45,11 +47,9 @@ scholarGoggler <- function(...){
                   "Enter Scholar ID or full URL:",
                   value=default_id),
         actionButton("button","Cloud Me"),
-        h5("Example:"),
-        h5("https://scholar.google.com/citations?user=THIS_PART_IS_THE_ID&hl=en"),
-        radioButtons("cloud_type","Visualization type",choices=c("Titles","Journals"),inline=T),
+
         sliderInput("range",
-                    "Start and end date of articles to use",
+                    "Restrict to these dates:",
                     min = 1969,
                     max = 2025,
                     value = c(1999,2024),sep=""),
@@ -81,13 +81,14 @@ scholarGoggler <- function(...){
         sliderInput("zoomout","Zoom",value=0.92,min=0.1,max=1),
         sliderInput("minfreq","Minimum word frequency",min=1,max=8,value=1),
         sliderInput("maxfreq","Maximum word frequency",min=10,max=300,value=40),
-        textInput("dropwords","Remove these words",value="however,also"),
-        textInput("keep_uppercase","Repair uppercase",value="DNA,RNA,cDNA"),
+        textInput("dropwords","Drop these words"),
+        textInput("keep_uppercase","Repair uppercase",placeholder="DNA,PCR"),
         textInput("depluralize","Depluralize and collapse these words",
-                  value="tumors,patients,cells"),
+                  placeholder="tumors,patients,cells"),
+        radioButtons("cloud_type","Visualization type",choices=c("Titles","Journals"),inline=T),
         textInput("coolor","Use custom palette",placeholder="https://coolors.co/df9a57-fc7a57-fcd757-eefc57-5e5b52"),
-        h5("Enter a complete URL from coolors.co")
-
+        h5("Enter a complete URL from coolors.co"),
+        bookmarkButton()
       ),
 
       # Show a plot of the generated distribution
@@ -117,8 +118,8 @@ scholarGoggler <- function(...){
     h5("About this page:"),
     print("Created and maintained by Ryan Morin (rdmorin@sfu.ca); @morinryan morinryan.bsky.social")
 
-  )
-
+  ) #fluidPage
+  }
   # Define server logic required to draw a histogram
   server <- function(input, output, session) {
     check_id = reactive({
@@ -151,7 +152,13 @@ scholarGoggler <- function(...){
       }
       clean_id = input$id
       clean_id= str_remove(input$id,".+user=")
-      pubz=scholar::get_publications(clean_id) %>% dplyr::filter(year > input$range[1], year < input$range[2])
+      pubz=scholar::get_publications(clean_id) %>% filter(!is.na(year))
+      max_year = max(pubz$year)
+      min_year = min(pubz$year)
+      print(paste("MIN",min_year,"MAX",max_year))
+      updateSliderInput(session,inputId = "range", min = min_year,max=max_year)
+      pubz = pubz %>% dplyr::filter(year > input$range[1], year < input$range[2])
+
       message(paste("SCHOLAR:",clean_id,Sys.time()))
       cat(paste("SCHOLAR",clean_id,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
       message(paste("NAME:",get_scholar()$name))
@@ -196,6 +203,8 @@ scholarGoggler <- function(...){
     })
     observeEvent(input$button, {
       updateTabsetPanel(session,"main",selected="About")
+
+
       output$scholar_name = renderText({
         get_scholar()$name
       })
@@ -211,6 +220,7 @@ scholarGoggler <- function(...){
         minsize = input$zoomout
         ai = count_title_words()
         if(!input$dropwords==""){
+
           removeme = unlist(strsplit(input$dropwords,","))
           ai = dplyr::filter(ai,!word %in% removeme)
         }
@@ -437,5 +447,5 @@ scholarGoggler <- function(...){
 
   }
   # Run the application
-  shinyApp(ui = ui, server = server)
+  shinyApp(ui = ui, server = server, enableBookmarking = "url")
 }
