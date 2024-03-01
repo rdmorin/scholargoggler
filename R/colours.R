@@ -14,6 +14,12 @@ ponyo = c("#B47169", "#A17697", "#98776A", "#9CA562", "#F6CEAA", "#87A377", "#83
 picasso = c("#6A4C60", "#73A893", "#4D7350", "#4E5970", "#3D6229", "#5D8547", "#83404D", "#954E3C", "#4C7C66", "#D44D23", "#CDAA61", "#B43D1B", "#D95A34", "#5D7577", "#97620D", "#623027")
 Park_Guell = c("#C691C0", "#EAC5A8", "#6F485A", "#83923A", "#963E12", "#4761D1", "#67458C", "#E55436", "#699BAB","#D97A5F", "#62815C", "#D7B15C", "#816B37", "#A97F42", "#F58C88", "#734346")
 Colorado = c("#C67C59", "#7D692E", "#C4C433", "#686E38", "#968B3D", "#828210", "#3C536A", "#C8B537", "#0F437F","#DD6F3D" ,"#285684", "#AB661E", "#7E4725", "#741915", "#DAA03D", "#8E5336")
+Pongal = c("#9D0F01","#CC1700","#E5651A","#F39001","#98B412","#B6D433")
+BoldDecision = c("#1a3a46", "#386857", "#738564", "#e89d56", "#CD541D", "#922637")
+SoftSpectrum = c("#6EA56A" ,"#8CB35C", "#CCD069", "#F68F4C", "#C1CE84", "#61A57D", "#852413",
+                 "#E6E47F" ,"#2B6287","#84C6C3", "#896A2F", "#C64232", "#F9B58F", "#65B59B", "#517C85",
+                 "#ECE59F", "#75C2A5", "#E56E2B")
+HotCold = c("#1984c5", "#22a7f0", "#63bff0", "#a7d5ed", "#e1a692", "#de6e56", "#e14b31", "#c23728")
 
 BottleRocket1 = wesanderson::wes_palettes$BottleRocket1
 Zissou1Continuous = wesanderson::wes_palettes$Zissou1Continuous
@@ -39,7 +45,11 @@ Morinlab = moroncolours::get_moron_pal("clinical","all")
 #Colours for DLBCL genetic subgroups (LymphGen)
 DLBCL = c("EZB-MYC" = "#52000F","EZB" = "#721F0F","EZB-COMP" = "#C7371A","ST2" = "#C41230","ST2-COMP" = "#EC3251","MCD" = "#3B5FAC","MCD-COMP" = "#6787CB","BN2" =  "#7F3293","BN2-COMP" = "#A949C1","N1" = "#55B55E","N1-COMP" = "#7FC787","A53" = "#5b6d8a")
 
-cols = list("BobMarley"=bobmarley,
+cols = list("HotCold"=HotCold,
+            "BobMarley"=bobmarley,
+            "SoftSpectrum"=SoftSpectrum,
+            "BoldDecision" = BoldDecision,
+            "Pongal" = Pongal,
             "DLBCL"=DLBCL,
             "BottleRocket1"=BottleRocket1,
             "SuperApe"=superape,
@@ -87,7 +97,7 @@ get_all_colours = function(){
 #'
 #' @examples
 get_colour_names = function(){
-    available_cols =c("SgtPepper","Zissou1Continuous","BottleRocket1",
+    available_cols =c("HotCold","SoftSpectrum","BoldDecision","SgtPepper","Pongal","Zissou1Continuous","BottleRocket1",
                       "LedZep","SuperApe","BobMarley","frozen","barbie","dune",
 			                "austinpowers","Ponyo","tron","Tsimshian","Tam",
                       "warhol","vangogh","VanGogh2","Cross","Pillement","VanGogh3",
