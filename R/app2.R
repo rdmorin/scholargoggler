@@ -36,7 +36,8 @@ adjustcolor_v = Vectorize( adjustcolor )
 #'
 #' @examples
 scholarGoggler2 <- function(...){
- ui <- fluidPage(
+  ui <- function(request){
+    fluidPage(
   # Application title
   titlePanel(title=div(img(src="https://github.com/rdmorin/scholargoggler/raw/main/img/goggler2.png",
                            "Scholar Goggler")),
@@ -119,13 +120,18 @@ scholarGoggler2 <- function(...){
       sliderInput("padding","Padding (higher means more whitespace)",value=1,min=0,max=10),
       radioButtons("scaling","Size scaling method",inline=T,choices=c("linear","sqrt","log"),selected="linear"),
       #sliderInput("minfreq","Minimum word frequency",min=1,max=8,value=1),
-      sliderInput("maxfreq","Maximum word frequency",min=10,max=300,value=40),
+      #sliderInput("maxminfreq","Maximum word frequency",min=10,max=300,value=40),
+      sliderInput("maxminfreq",
+                  "Keep words in this frequency range:",
+                  min = 1,
+                  max = 100,
+                  value = c(2,50),sep=""),
       textInput("dropwords","Remove these words",value="however,also"),
       textInput("keep_uppercase","Repair uppercase",value="DNA,RNA,cDNA"),
       textInput("depluralize","Depluralize and collapse these words",
                	value="tumors,patients,cells"),
       #radioButtons("cloud_type","Visualization type",choices=c("Titles","Journals"),inline=T),
-
+      bookmarkButton()
     ),
 
     # Show a plot of the generated distribution
@@ -164,8 +170,8 @@ scholarGoggler2 <- function(...){
   h5("About this page:"),
   print("Created and maintained by Ryan Morin (rdmorin@sfu.ca); @morinryan morinryan.bsky.social")
 
-)
-
+) #fluidpage
+}
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
   darkmode(label = "⏳",
@@ -195,9 +201,9 @@ server <- function(input, output, session) {
     clean_id= str_remove(input$id,".+user=")
     pubz=scholar::get_publications(clean_id) %>% dplyr::filter(year > input$range[1], year < input$range[2])
     message(paste("SCHOLAR:",clean_id,Sys.time()))
-    cat(paste("SCHOLAR",clean_id,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
+    cat(paste("SCHOLAR_2",clean_id,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
     message(paste("NAME:",get_scholar()$name))
-    cat(paste("NAME",get_scholar()$name,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
+    cat(paste("NAME_2",get_scholar()$name,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
     titles=pubz$title
     docs <- Corpus(VectorSource(titles))
     docs <- docs %>%
@@ -220,8 +226,10 @@ server <- function(input, output, session) {
       dplyr::select(word,freq)
     
     df = arrange(df,desc(freq))
-    df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
-    #df = filter(df,freq >= input$minfreq)
+    #df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
+    df = mutate(df,freq =ifelse( freq> input$maxminfreq[2],input$maxminfreq[2],freq))
+    #year > input$range[1], year < input$range[2]
+    df = filter(df,freq >= input$maxminfreq[1])
     #df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
 
     keep_uppercase = ""
@@ -343,5 +351,5 @@ server <- function(input, output, session) {
 
  }
  # Run the application
- shinyApp(ui = ui, server = server)
+ shinyApp(ui = ui, server = server,enableBookmarking = "url")
 }
