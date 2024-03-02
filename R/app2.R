@@ -54,7 +54,7 @@ scholarGoggler2 <- function(...){
                 value=default_id),
       actionButton("button","Cloud Me"),
       checkboxInput("fix", "Redraw wordcloud each time",value=FALSE),
-      prettySwitch("togglemode", "Enable Dark Mode", value = FALSE,
+      prettySwitch("togglemode", "Toggle Dark Mode On/Off", value = FALSE,
                    fill = TRUE, status = "info"),
       sliderInput("range",
                   "Date range to use",
@@ -318,6 +318,7 @@ server <- function(input, output, session) {
       
       make_cloud()
     })
+    
     output$alt <- renderText({
 
     ai = count_title_words()
