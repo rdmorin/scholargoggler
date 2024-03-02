@@ -4,6 +4,8 @@
 # This is a simple Shiny app that generates a word cloud based on the titles
 # of articles in a Google Scholar profile
 library(shiny)
+library(shinyWidgets)
+library(shinyDarkmode)
 library(htmlwidgets)
 library(d3wordcloud)
 library(webshot2)
@@ -11,6 +13,7 @@ library(moroncolours)
 library(scholar)
 library(wordcloud2)
 library(tm)
+library(shinyjs)
 library(MetBrewer)
 library(wesanderson)
 
@@ -37,10 +40,12 @@ scholarGoggler2 <- function(...){
   # Application title
   titlePanel(title=div(img(src="https://github.com/rdmorin/scholargoggler/raw/main/img/goggler2.png",
                            "Scholar Goggler")),
+             
              windowTitle="Where scholars go to google themselves"),
   tags$head(
     tags$style(HTML('div#wcLabel {display: none;}'))
   ),
+  use_darkmode(),
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
@@ -48,6 +53,9 @@ scholarGoggler2 <- function(...){
                 "Enter Scholar ID or full URL:",
                 value=default_id),
       actionButton("button","Cloud Me"),
+      checkboxInput("fix", "Redraw wordcloud each time",value=FALSE),
+      prettySwitch("togglemode", "Enable Dark Mode", value = FALSE,
+                   fill = TRUE, status = "info"),
       sliderInput("range",
                   "Date range to use",
                   min = 1969,
@@ -56,24 +64,49 @@ scholarGoggler2 <- function(...){
       selectInput("fancycolour","Use fancy colour scheme",
                    choices=get_colour_names(),
                    selected="Hokusai1"),
-      selectInput("font_family","Font",choices=c("Kode Mono",
-                                                 "Helvetica",
-                                                 "AppleGothic",
-                                                 "Optima",
-                                                 "Luminari",
-                                                  "Courier",
-                                                 "Montserrat",
+      selectInput("font_family","Font",choices=c("Amatic SC",
+                                                 "Antonio",
                                                  "Arial",
-                                                 "Tahoma",
-                                                "Times",
-                                                 "Open Sans",
-                                                 "Indie Flower",
-                                                 "Oswald",
-                                                 "Madimi One",
+                                                 "Architects Daughter",
+                                                 "Archivo Black",
+                                                 "AppleGothic",
+                                                 "Bai Jamjuree",
                                                  "Bebas Neue",
+                                                 "Bebas Neue",
+                                                 #"Bungee",
+                                                 "Comic Neue",
+                                                 "Courier",
+                                                 "Creepster",
+                                                 "Dosis",
+                                                 #"Exo 2",
+                                                 "Fjalla One",
+                                                 "Gloria Hallelujah",
+                                                 "Gruppo",
+                                                 "Helvetica",
+                                                 "Indie Flower",
+                                                 "Josefin Sans",
+                                                 "Kode Mono",
+                                                 "Luminari",
+                                                 "Lilita One",
+                                                 "Luckiest Guy",
+                                                 "Macondo",
+                                                 "Montserrat",
+                                                 "Madimi One",
+                                                 "Open Sans",
+                                                 "Oswald",
+                                                 "Optima",
                                                  "Outfit",
-                                                 "Exo 2",
-                                                 "Permanent Marker"),selected="Indie Flower"),
+                                                 "Protest Riot",
+                                                 "Permanent Marker",
+                                                 "Rubik Bubbles",
+                                                 "Righteous",
+                                                 "Single Day",
+                                                 "Source Code Pro",
+                                                 "Staatliches",
+                                                 "Tahoma",
+                                                 "Teko",
+                                                 "Times","Ubuntu Condensed"
+                                                 ),selected="Indie Flower"),
       selectInput("spiral","Layout Method",
                    choices=c("rectangular",
                              "archimedean"),selected="archimedean"),
@@ -96,8 +129,12 @@ scholarGoggler2 <- function(...){
 
     # Show a plot of the generated distribution
     mainPanel(
+      tags$style(
+        type = 'text/css',
+        '.darkmode--activated button:not(.darkmode-toggle) {background: #bd9e68; border-color: #bd9e68; color: #fff; font-weight : 700;}'
+      ),
       tabsetPanel(id="main",selected = "Word Cloud",
-        tabPanel("Word Cloud", d3wordcloudOutput("cloud",width = "1000px", height = "1000px")),
+        tabPanel("Word Cloud", d3wordcloudOutput("cloud",width = "900px", height = "900px")),
         tabPanel("Alt Text", textOutput("alt")),
         tabPanel("Tabular result",tableOutput("tabular")),
         tabPanel("About",
@@ -130,11 +167,17 @@ scholarGoggler2 <- function(...){
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  darkmode(label = "⏳",
+           mixColor = "#000")
+  darkmode_toggle(inputid = 'togglemode')
   check_id = reactive({
     this_id = input$id
   })
   
   count_title_words = reactive({
+    input$padding
+    input$font_family
+    input$scaling
     print("running count_title_words()")
     depluralize_words = c()
     if(!input$depluralize == ""){
@@ -196,7 +239,7 @@ server <- function(input, output, session) {
     scholar::get_profile(clean_id)
   })
   observeEvent(input$button, {
-    updateTabsetPanel(session,"main",selected="About")
+    #updateTabsetPanel(session,"main",selected="About")
     output$scholar_name = renderText({
       get_scholar()$name
     })
@@ -207,7 +250,7 @@ server <- function(input, output, session) {
   })
 
   make_cloud = reactive({
-
+    
       ai = count_title_words()
       print("ROWS:")
       print(nrow(ai))
@@ -226,7 +269,8 @@ server <- function(input, output, session) {
 
         colour = unname(ai$colour)
         output$tabular = renderTable(ai,rownames = F)
-        
+      print("running: $('#wordcloud svg g').empty()")
+      runjs("$('#wordcloud svg g').empty()")   # <- clear the canvas before drawing new cloud
       if(input$rotation=="Ridiculous Rotation"){
         
         d3wordcloud(ai$word,ai$freq,
@@ -267,8 +311,11 @@ server <- function(input, output, session) {
     #}
   })
   observeEvent(input$button,{
-    updateTabsetPanel(session,"main",selected="About")
+    #updateTabsetPanel(session,"main",selected="About")
     output$cloud = renderD3wordcloud({
+      
+      #if(input$fix) 
+      
       make_cloud()
     })
     output$alt <- renderText({
