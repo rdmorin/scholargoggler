@@ -31,7 +31,8 @@ about_text = '<h2>Recent updates:</></h2><h4><ul>
   <input type="hidden" name="hosted_button_id" value="WRRPVG5NDUXXN" />
   <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
   <img alt="" border="0" src="https://www.paypal.com/en_CA/i/scr/pixel.gif" width="5" height="5" />
-  </form><br>'
+  </form><br>
+'
 # load all the colour palettes. If you want to add new ones, incorporate them into colours.R
 
 
@@ -47,7 +48,7 @@ adjustcolor_v = Vectorize( adjustcolor )
 #'
 #' @examples
 scholarGoggler <- function(...){
-
+  about_text = paste0(about_text,get_ad())
   ui <- function(request){
     pageWithSidebar(
       titlePanel(title=div(img(src="https://github.com/rdmorin/scholargoggler/raw/main/img/goggler2.png",
@@ -59,7 +60,7 @@ scholarGoggler <- function(...){
         textOutput("scholar_h"),
         radioButtons("rd","Search by:",choices = c("Name",
                                                     "ID"),
-                                                    selected = "ID",inline=T),
+                                                    selected = "Name",inline=T),
         conditionalPanel(
           "input.rd == 'Name'",
           textInput("firstname","Scholar first name",placeholder="Ryan"),
@@ -80,17 +81,41 @@ scholarGoggler <- function(...){
                     min = 1969,
                     max = 2025,
                     value = c(1999,2024),sep=""),
-        radioButtons("bgcolour","Background",
+        radioButtons("colourscheme","Colour options",choices = c("Show",
+                                                                    "Hide"),
+                     selected = "Hide",inline=T),
+        conditionalPanel(
+          "input.colourscheme == 'Show'",
+          radioButtons("bgcolour","Background",
                      choices = c("white","greyish","twilight","black","transparent"),
                      selected="black",inline=TRUE),
-        selectInput("fancycolour","Use fancy colour scheme",
+          selectInput("fancycolour","Use fancy colour scheme",
                     choices=c("white-on-black",get_colour_names()),
                     selected="Hokusai1"),
-        checkboxInput("dillute","Transparency based on frequency?",value=TRUE),
-        selectInput("font_family","Font",choices=c("Helvetica","AppleGothic","Optima","Luminari",
+          textInput("coolor","Use custom palette",placeholder="https://coolors.co/df9a57-fc7a57-fcd757-eefc57-5e5b52"),
+          h5("Enter a complete URL from coolors.co"),
+          checkboxInput("dillute","Transparency based on frequency?",value=TRUE)
+        ),
+        radioButtons("words","Word appearance options",choices = c("Show",
+                                                                        "Hide"),
+                     selected = "Hide",inline=T),
+        conditionalPanel(
+          "input.words == 'Show'",
+          selectInput("font_family","Font",choices=c("Helvetica","AppleGothic","Optima","Luminari",
                                                    "Courier","Klee","Arial","Tahoma",
                                                    "Times","Trebuchet MS","Verdana"),selected="Optima"),
-        selectInput("shape","Cloud Shape",
+          radioButtons("rotation","Word Rotation",choices=c("No Rotation",
+                                                          "A bit of rotation",
+                                                          "Ridiculous Rotation",
+                                                          "45 degrees",
+                                                          "90 degrees"),inline=T,selected="45 degrees"),
+        ),
+        radioButtons("cloudshape","Cloud shape options",choices = c("Show",
+                                                               "Hide"),
+                     selected = "Hide",inline=T),
+        conditionalPanel(
+          "input.cloudshape == 'Show'",
+          selectInput("shape","Cloud Shape",
                     choices=c("circle",
                               "cardioid",
                               "diamond",
@@ -98,26 +123,27 @@ scholarGoggler <- function(...){
                               "triangle",
                               "pentagon",
                               "star"),selected="pentagon"),
-        radioButtons("rotation","Word Rotation",choices=c("No Rotation",
-                                                          "A bit of rotation",
-                                                          "Ridiculous Rotation",
-                                                          "45 degrees",
-                                                          "90 degrees"),inline=T,selected="45 degrees"),
-        radioButtons("layout","Display type",choices=c("Cloud","Vortex"),selected="Cloud",inline=T),
-        sliderInput("ellipticity","Ellipticity (higher is rounder)",value=1,min=0.2,max=1),
+          radioButtons("layout","Display type",choices=c("Cloud","Vortex"),selected="Cloud",inline=T),
+          sliderInput("ellipticity","Ellipticity (higher is rounder)",value=1,min=0.2,max=1),
+        ),
         sliderInput("zoomout","Zoom",value=0.92,min=0.1,max=1),
-        sliderInput("minmaxfreq",
+        radioButtons("fiddle","Filter/manipulate words?",choices = c("Yes",
+                                                   "No"),
+                     selected = "No",inline=T),
+        conditionalPanel(
+          "input.fiddle == 'Yes'",
+          sliderInput("minmaxfreq",
                     "Set min/max word count",
                     min = 1,
                     max = 300,
                     value = c(1,45),sep=""),
-        textInput("dropwords","Drop these words"),
-        textInput("keep_uppercase","Repair uppercase",placeholder="DNA,PCR"),
-        textInput("depluralize","Depluralize and collapse these words",
+          textInput("dropwords","Drop these words"),
+          textInput("keep_uppercase","Repair uppercase",placeholder="DNA,PCR"),
+          textInput("depluralize","Depluralize and collapse these words",
                   placeholder="tumors,patients,cells"),
+        ),
         radioButtons("cloud_type","Visualization type",choices=c("Titles","Journals"),inline=T),
-        textInput("coolor","Use custom palette",placeholder="https://coolors.co/df9a57-fc7a57-fcd757-eefc57-5e5b52"),
-        h5("Enter a complete URL from coolors.co"),
+        
         bookmarkButton()
       ),
 
