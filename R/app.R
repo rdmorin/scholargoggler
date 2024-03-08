@@ -256,6 +256,9 @@ scholarGoggler <- function(...){
           }else{
             clean_id = get_scholar_id(last_name = input$lastname,first_name=input$firstname)
           }
+          if(is.na(clean_id)){
+            return(NA)
+          }
         }
       }else{
         clean_id = input$id
@@ -274,20 +277,25 @@ scholarGoggler <- function(...){
       #updateTabsetPanel(session,"main",selected="About")
 
       scholar_info = get_scholar()
-      
-      
-      output$scholar_name = renderText({
-        paste("<h3>Current scholar:", scholar_info$name,"</h3>")
-      })
-      
-      output$scholar_h = renderText({
-        paste("H index:", scholar_info$h_index)
-      })
-      
-      output$clean_id = renderText({scholar_info$id})
-      if(input$rd == "Name"){
-        updateTextInput(value = scholar_info$id,inputId="id")
+      if(all(is.na(scholar_info))){
+        output$scholar_name = renderText({
+          paste("<h3>Name search failed!</h3>")
+        })
+      }else{
+        output$scholar_name = renderText({
+          paste("<h3>Current scholar:", scholar_info$name,"</h3>")
+        })
+        
+        output$scholar_h = renderText({
+          paste("H index:", scholar_info$h_index)
+        })
+        
+        output$clean_id = renderText({scholar_info$id})
+        if(input$rd == "Name"){
+          updateTextInput(value = scholar_info$id,inputId="id")
+        }
       }
+      
     })
 
     make_cloud = reactive({
