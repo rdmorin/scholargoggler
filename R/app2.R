@@ -4,6 +4,7 @@
 # This is a simple Shiny app that generates a word cloud based on the titles
 # of articles in a Google Scholar profile
 library(shiny)
+library(shinyjs)
 library(shinyWidgets)
 library(shinyDarkmode)
 library(htmlwidgets)
@@ -146,7 +147,7 @@ scholarGoggler2 <- function(...){
         tabPanel("Tabular result",tableOutput("tabular")),
         tabPanel("About",
         tags$div(HTML('
-        
+
         <h4>
         Enjoying the app? Consider a small donation.</h3>
         <img src="https://github.com/rdmorin/scholargoggler/raw/main/img/goggler2.png">
@@ -180,7 +181,7 @@ server <- function(input, output, session) {
   check_id = reactive({
     this_id = input$id
   })
-  
+
   count_title_words = reactive({
     input$padding
     input$font_family
@@ -216,7 +217,7 @@ server <- function(input, output, session) {
     matrix <- as.matrix(dtm)
     words <- sort(rowSums(matrix),decreasing=TRUE)
     df <- data.frame(word = names(words),freq=words)
-    
+
     df = dplyr::filter(df,grepl("...",word))
     df = dplyr::filter(df,word != "the")
         #deal with redundancy
@@ -224,7 +225,7 @@ server <- function(input, output, session) {
     df = group_by(df,word_family) %>% summarise(freq=sum(freq)) %>%
       mutate(word = word_family) %>%
       dplyr::select(word,freq)
-    
+
     df = arrange(df,desc(freq))
     #df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
     df = mutate(df,freq =ifelse( freq> input$maxminfreq[2],input$maxminfreq[2],freq))
@@ -281,7 +282,7 @@ server <- function(input, output, session) {
       print("running: $('#wordcloud svg g').empty()")
       runjs("$('#wordcloud svg g').empty()")   # <- clear the canvas before drawing new cloud
       if(input$rotation=="Ridiculous Rotation"){
-        
+
         d3wordcloud(ai$word,ai$freq,
                     font=input$font_family,
                     colors=sample(colour,nrow(ai),replace=T),
@@ -331,7 +332,7 @@ server <- function(input, output, session) {
     output$alt <- renderText({
 
     ai = count_title_words()
-    
+
     if(!input$dropwords==""){
       removeme = unlist(strsplit(input$dropwords,","))
       ai = dplyr::filter(ai,!word %in% removeme)

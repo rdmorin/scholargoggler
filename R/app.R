@@ -516,12 +516,15 @@ scholarGoggler <- function(...){
         make_cloud()
       })
       output$savecloud <- downloadHandler(
-        filename = paste("wordcloud", '.png', sep=''),
+        filename = paste(input$id,"_wordcloud", '.png', sep=''),
         content = function(file) {
           owd <- setwd(tempdir())
           on.exit(setwd(owd))
           saveWidget(make_cloud(), "temp.html", selfcontained = FALSE)
-          webshot("temp.html", delay =5, file = file, cliprect = "viewport",vwidth=1000,vheight=1000)
+          webshot("temp.html", delay =5, file = file, cliprect = "viewport",vwidth=1200,vheight=1200)
+          filename = paste(str_replace_all(get_scholar()$name,"\\s+","_"),"_wordcloud", '.png', sep='')
+          file.copy(file,here::here(filename),overwrite = T)
+
         })
       output$alt <- renderText({
         if(input$cloud_type == "Titles"){
@@ -541,7 +544,11 @@ scholarGoggler <- function(...){
         for(i in c(1:n_words)){
           alttext = paste(alttext,ai[i,"word"])
         }
+        alt_text = paste(str_replace_all(get_scholar()$name,"\\s+","_"),"_wordcloud", '.txt', sep='')
+        cat(alttext,file=alt_text,append = F)
         alttext
+
+
       })
     })
 
