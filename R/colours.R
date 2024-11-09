@@ -129,3 +129,18 @@ get_colour_names = function(){
 			                "Moreau","DLBCL")
   return(available_cols[order(available_cols)])
 }
+
+
+
+#' Get an advertisement to maybe show somewhere
+#'
+#' @return HTML
+#' @export
+#'
+#' @examples
+get_ad = function(){
+  adv = '<H3>Do you love your cloud enough to wear it?</H3>
+  <a href="https://www.jdoqocy.com/click-101118824-13080011" target="_top">
+  <img src="https://www.ftjcfx.com/image-101118824-13080011" width="300" height="250" alt="Custom T-Shirts By DesignAShirt" border="0"/></a>'
+  return(adv)
+}

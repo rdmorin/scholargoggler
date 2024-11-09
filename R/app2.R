@@ -5,6 +5,8 @@
 # of articles in a Google Scholar profile
 library(shiny)
 library(shinyjs)
+library(shinyWidgets)
+library(shinyDarkmode)
 library(htmlwidgets)
 library(d3wordcloud)
 library(webshot2)
@@ -12,6 +14,7 @@ library(moroncolours)
 library(scholar)
 library(wordcloud2)
 library(tm)
+library(shinyjs)
 library(MetBrewer)
 library(wesanderson)
 
@@ -34,14 +37,17 @@ adjustcolor_v = Vectorize( adjustcolor )
 #'
 #' @examples
 scholarGoggler2 <- function(...){
- ui <- fluidPage(
+  ui <- function(request){
+    fluidPage(
   # Application title
   titlePanel(title=div(img(src="https://github.com/rdmorin/scholargoggler/raw/main/img/goggler2.png",
                            "Scholar Goggler")),
+             
              windowTitle="Where scholars go to google themselves"),
   tags$head(
     tags$style(HTML('div#wcLabel {display: none;}'))
   ),
+  use_darkmode(),
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
@@ -49,6 +55,9 @@ scholarGoggler2 <- function(...){
                 "Enter Scholar ID or full URL:",
                 value=default_id),
       actionButton("button","Cloud Me"),
+      checkboxInput("fix", "Redraw wordcloud each time",value=FALSE),
+      prettySwitch("togglemode", "Toggle Dark Mode On/Off", value = FALSE,
+                   fill = TRUE, status = "info"),
       sliderInput("range",
                   "Date range to use",
                   min = 1969,
@@ -56,49 +65,84 @@ scholarGoggler2 <- function(...){
                   value = c(1999,2024),sep=""),
       selectInput("fancycolour","Use fancy colour scheme",
                    choices=get_colour_names(),
-                   selected="Hokusai1"),
-      selectInput("font_family","Font",choices=c("Kode Mono",
-                                                 "Helvetica",
-                                                 "AppleGothic",
-                                                 "Optima",
-                                                 "Luminari",
-                                                  "Courier",
-                                                 "Montserrat",
+                   selected="Moreau"),
+      selectInput("font_family","Font",choices=c("Amatic SC",
+                                                 "Antonio",
                                                  "Arial",
-                                                 "Tahoma",
-                                                "Times",
-                                                 "Open Sans",
-                                                 "Indie Flower",
-                                                 "Oswald",
-                                                 "Madimi One",
+                                                 "Architects Daughter",
+                                                 "Archivo Black",
+                                                 "AppleGothic",
+                                                 "Bai Jamjuree",
                                                  "Bebas Neue",
+                                                 "Bebas Neue",
+                                                 #"Bungee",
+                                                 "Comic Neue",
+                                                 "Courier",
+                                                 "Creepster",
+                                                 "Dosis",
+                                                 #"Exo 2",
+                                                 "Fjalla One",
+                                                 "Gloria Hallelujah",
+                                                 "Gruppo",
+                                                 "Helvetica",
+                                                 "Indie Flower",
+                                                 "Josefin Sans",
+                                                 "Kode Mono",
+                                                 "Luminari",
+                                                 "Lilita One",
+                                                 "Luckiest Guy",
+                                                 "Macondo",
+                                                 "Montserrat",
+                                                 "Madimi One",
+                                                 "Open Sans",
+                                                 "Oswald",
+                                                 "Optima",
                                                  "Outfit",
-                                                 "Exo 2",
-                                                 "Permanent Marker"),selected="Indie Flower"),
+                                                 "Protest Riot",
+                                                 "Permanent Marker",
+                                                 "Rubik Bubbles",
+                                                 "Righteous",
+                                                 "Single Day",
+                                                 "Source Code Pro",
+                                                 "Staatliches",
+                                                 "Tahoma",
+                                                 "Teko",
+                                                 "Times","Ubuntu Condensed"
+                                                 ),selected="Lilita One"),
       selectInput("spiral","Layout Method",
                    choices=c("rectangular",
-                             "archimedean"),selected="archimedean"),
+                             "archimedean"),
+                  selected="rectangular"),
       radioButtons("rotation","Limit Rotation",choices=c("No Rotation",
                                                          "A bit of rotation",
                                                          "Ridiculous Rotation",
                                                          "45 degrees","90 degrees"),inline=T,
-                   selected="A bit of rotation"),
+                   selected="No Rotation"),
       sliderInput("padding","Padding (higher means more whitespace)",value=1,min=0,max=10),
       radioButtons("scaling","Size scaling method",inline=T,choices=c("linear","sqrt","log"),selected="linear"),
       #sliderInput("minfreq","Minimum word frequency",min=1,max=8,value=1),
-      sliderInput("maxfreq","Maximum word frequency",min=10,max=300,value=40),
+      #sliderInput("maxminfreq","Maximum word frequency",min=10,max=300,value=40),
+      sliderInput("maxminfreq",
+                  "Keep words in this frequency range:",
+                  min = 1,
+                  max = 100,
+                  value = c(2,50),sep=""),
       textInput("dropwords","Remove these words",value="however,also"),
       textInput("keep_uppercase","Repair uppercase",value="DNA,RNA,cDNA"),
       textInput("depluralize","Depluralize and collapse these words",
                	value="tumors,patients,cells"),
       #radioButtons("cloud_type","Visualization type",choices=c("Titles","Journals"),inline=T),
-
+      bookmarkButton()
     ),
 
     # Show a plot of the generated distribution
     mainPanel(
+      tags$style(
+        type = 'text/css',
+        '.darkmode--activated button:not(.darkmode-toggle) {background: #bd9e68; border-color: #bd9e68; color: #fff; font-weight : 700;}'
+      ),
       tabsetPanel(id="main",selected = "Word Cloud",
-        tabPanel("Word Cloud", d3wordcloudOutput("cloud",width = "1000px", height = "1000px")),
+        tabPanel("Word Cloud", d3wordcloudOutput("cloud",width = "900px", height = "900px")),
         tabPanel("Alt Text", textOutput("alt")),
         tabPanel("Tabular result",tableOutput("tabular")),
         tabPanel("About",
@@ -127,15 +171,21 @@ scholarGoggler2 <- function(...){
   h5("About this page:"),
   print("Created and maintained by Ryan Morin (rdmorin@sfu.ca); @morinryan morinryan.bsky.social")
 
-)
-
+) #fluidpage
+}
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  darkmode(label = "⏳",
+           mixColor = "#000")
+  darkmode_toggle(inputid = 'togglemode')
   check_id = reactive({
     this_id = input$id
   })
 
   count_title_words = reactive({
+    input$padding
+    input$font_family
+    input$scaling
     print("running count_title_words()")
     depluralize_words = c()
     if(!input$depluralize == ""){
@@ -152,9 +202,9 @@ server <- function(input, output, session) {
     clean_id= str_remove(input$id,".+user=")
     pubz=scholar::get_publications(clean_id) %>% dplyr::filter(year > input$range[1], year < input$range[2])
     message(paste("SCHOLAR:",clean_id,Sys.time()))
-    cat(paste("SCHOLAR",clean_id,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
+    cat(paste("SCHOLAR_2",clean_id,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
     message(paste("NAME:",get_scholar()$name))
-    cat(paste("NAME",get_scholar()$name,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
+    cat(paste("NAME_2",get_scholar()$name,Sys.time(),input$keep_uppercase,"\n",sep="\t"),file="./log.tsv",append=T)
     titles=pubz$title
     docs <- Corpus(VectorSource(titles))
     docs <- docs %>%
@@ -177,8 +227,10 @@ server <- function(input, output, session) {
       dplyr::select(word,freq)
 
     df = arrange(df,desc(freq))
-    df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
-    #df = filter(df,freq >= input$minfreq)
+    #df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
+    df = mutate(df,freq =ifelse( freq> input$maxminfreq[2],input$maxminfreq[2],freq))
+    #year > input$range[1], year < input$range[2]
+    df = filter(df,freq >= input$maxminfreq[1])
     #df = mutate(df,freq =ifelse( freq> input$maxfreq,input$maxfreq,freq))
 
     keep_uppercase = ""
@@ -208,7 +260,7 @@ server <- function(input, output, session) {
   })
 
   make_cloud = reactive({
-
+    
       ai = count_title_words()
       print("ROWS:")
       print(nrow(ai))
@@ -227,7 +279,8 @@ server <- function(input, output, session) {
 
         colour = unname(ai$colour)
         output$tabular = renderTable(ai,rownames = F)
-      runjs("$('#wordcloud svg g').empty()")
+      print("running: $('#wordcloud svg g').empty()")
+      runjs("$('#wordcloud svg g').empty()")   # <- clear the canvas before drawing new cloud
       if(input$rotation=="Ridiculous Rotation"){
 
         d3wordcloud(ai$word,ai$freq,
@@ -270,8 +323,12 @@ server <- function(input, output, session) {
   observeEvent(input$button,{
     #updateTabsetPanel(session,"main",selected="About")
     output$cloud = renderD3wordcloud({
+      
+      #if(input$fix) 
+      
       make_cloud()
     })
+    
     output$alt <- renderText({
 
     ai = count_title_words()
@@ -295,5 +352,5 @@ server <- function(input, output, session) {
 
  }
  # Run the application
- shinyApp(ui = ui, server = server)
+ shinyApp(ui = ui, server = server,enableBookmarking = "url")
 }
