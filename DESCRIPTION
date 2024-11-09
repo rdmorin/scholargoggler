@@ -22,5 +22,6 @@ Imports:
     wordcloud2
 Remotes:
     morinlab/moroncolours,
-    BlakeRMills/MetBrewer
+    BlakeRMills/MetBrewer,
+    rdmorin/wordcloud2
 
