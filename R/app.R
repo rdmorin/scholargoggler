@@ -63,8 +63,8 @@ scholarGoggler <- function(...){
                                                     selected = "Name",inline=T),
         conditionalPanel(
           "input.rd == 'Name'",
-          textInput("firstname","Scholar first name",placeholder="Ryan"),
-          textInput("lastname","Scholar surname",placeholder = "Morin"),
+          textInput("firstname","Scholar first name",value="Ryan"),
+          textInput("lastname","Scholar surname",value = "Morin"),
           textInput("affiliation","Scholar affiliation",placeholder="include if necessary")
         ),
         conditionalPanel(
