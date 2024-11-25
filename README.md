@@ -37,6 +37,5 @@ scholarGoggler()
 
 If you find this project useful please consider donating a small amount to help offset the costs of hosting the Scholar Goggler service. 
 
-[Donate with PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WRRPVG5NDUXXN)
-
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q5169Z3E)
 
