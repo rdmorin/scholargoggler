@@ -6,7 +6,6 @@
 library(shiny)
 library(shinyjs)
 library(shinyWidgets)
-library(shinyDarkmode)
 library(htmlwidgets)
 library(d3wordcloud)
 library(webshot2)
