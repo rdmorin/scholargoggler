@@ -148,7 +148,7 @@ scholarGoggler <- function(...){
 
       # Show a plot of the generated distribution
       mainPanel(
-        tabsetPanel(id="main",selected = "About",
+        tabsetPanel(id="main",selected = "Word Cloud",
                     tabPanel("Word Cloud", wordcloud2Output("cloud",width = "1000px", height = "1000px"),downloadButton("Download PNG",outputId= "savecloud")),
                     tabPanel("Alt Text", textOutput("alt")),
                     tabPanel("Tabular result",downloadButton('download',"Download as CSV file"),tableOutput("tabular")),
@@ -510,7 +510,7 @@ scholarGoggler <- function(...){
       }
     })
     observeEvent(input$button,{
-      updateTabsetPanel(session,"main",selected="About")
+      #updateTabsetPanel(session,"main",selected="About")
       output$cloud = renderWordcloud2({
         make_cloud()
       })
