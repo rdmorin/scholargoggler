@@ -21,6 +21,11 @@ SoftSpectrum = c("#6EA56A" ,"#8CB35C", "#CCD069", "#F68F4C", "#C1CE84", "#61A57D
                  "#ECE59F", "#75C2A5", "#E56E2B")
 HotCold = c("#1984c5", "#22a7f0", "#63bff0", "#a7d5ed", "#e1a692", "#de6e56", "#e14b31", "#c23728")
 
+Neons = c("#FF6EC7","#FFFF33","#FF6700","#9400D3","#00FFFF","#FF073A","#CCFF00")
+NeonGreen = c("#39FF14")
+Warm = c("#FFCCCB","#FFD700","#FF7F50","#FFA500","#DABFFF","#FFF9B0","#F9844A","#FFD1DC")
+SoftGlow = c("#F99A3E","#B22B8F","#CDB4DB","#F1F426","#EE7B51")
+
 BottleRocket1 = wesanderson::wes_palettes$BottleRocket1
 Zissou1Continuous = wesanderson::wes_palettes$Zissou1Continuous
 Cross = MetBrewer::met.brewer("Cross",return_hex = T)
@@ -45,7 +50,7 @@ Morinlab = moroncolours::get_moron_pal("clinical","all")
 #Colours for DLBCL genetic subgroups (LymphGen)
 DLBCL = c("EZB-MYC" = "#52000F","EZB" = "#721F0F","EZB-COMP" = "#C7371A","ST2" = "#C41230","ST2-COMP" = "#EC3251","MCD" = "#3B5FAC","MCD-COMP" = "#6787CB","BN2" =  "#7F3293","BN2-COMP" = "#A949C1","N1" = "#55B55E","N1-COMP" = "#7FC787","A53" = "#5b6d8a")
 
-cols = list("HotCold"=HotCold,
+cols = list("HotCold"=HotCold,"Warm"=Warm,"Neon Green"=NeonGreen,Neons=Neons,
             "BobMarley"=bobmarley,
             "SoftSpectrum"=SoftSpectrum,
             "BoldDecision" = BoldDecision,
@@ -69,6 +74,7 @@ cols = list("HotCold"=HotCold,
             Hokusai1=Hokusai1,
             Tiepolo=Tiepolo,
             Renoir=Renoir,
+            SoftGlow=SoftGlow,
             LedZep=LedZep,
             Morgenstern=Morgenstern,
             OKeeffe2=OKeeffe2,
@@ -120,9 +126,9 @@ coolor_colour = function(cooler_url){
 #'
 #' @examples
 get_colour_names = function(){
-    available_cols =c("HotCold","SoftSpectrum","BoldDecision","SgtPepper","Pongal","Zissou1Continuous","BottleRocket1",
-                      "LedZep","SuperApe","BobMarley","frozen","barbie","dune",
-			                "austinpowers","Ponyo","tron","Tsimshian","Tam",
+    available_cols =c("HotCold","Warm","SoftSpectrum","BoldDecision","SgtPepper","Pongal","Zissou1Continuous","BottleRocket1",
+                      "LedZep","SuperApe","BobMarley","frozen","barbie","dune","SoftGlow","Neons",
+			                "austinpowers","Ponyo","tron","Tsimshian","Tam","Neon Green",
                       "warhol","vangogh","VanGogh2","Cross","Pillement","VanGogh3",
                       "picasso","Homer1","Hokusai1","Tiepolo","Renoir","Morgenstern",
                       "doctorwho","HandE","Park_Guell","Colorado","autumn","Klimt",
@@ -130,17 +136,3 @@ get_colour_names = function(){
   return(available_cols[order(available_cols)])
 }
 
-
-
-#' Get an advertisement to maybe show somewhere
-#'
-#' @return HTML
-#' @export
-#'
-#' @examples
-get_ad = function(){
-  adv = '<H3>Do you love your cloud enough to wear it?</H3>
-  <a href="https://www.jdoqocy.com/click-101118824-13080011" target="_top">
-  <img src="https://www.ftjcfx.com/image-101118824-13080011" width="300" height="250" alt="Custom T-Shirts By DesignAShirt" border="0"/></a>'
-  return(adv)
-}
