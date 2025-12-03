@@ -21,6 +21,11 @@ SoftSpectrum = c("#6EA56A" ,"#8CB35C", "#CCD069", "#F68F4C", "#C1CE84", "#61A57D
                  "#ECE59F", "#75C2A5", "#E56E2B")
 HotCold = c("#1984c5", "#22a7f0", "#63bff0", "#a7d5ed", "#e1a692", "#de6e56", "#e14b31", "#c23728")
 
+Neons = c("#FF6EC7","#FFFF33","#FF6700","#9400D3","#00FFFF","#FF073A","#CCFF00")
+NeonGreen = c("#39FF14")
+Warm = c("#FFCCCB","#FFD700","#FF7F50","#FFA500","#DABFFF","#FFF9B0","#F9844A","#FFD1DC")
+SoftGlow = c("#F99A3E","#B22B8F","#CDB4DB","#F1F426","#EE7B51")
+
 BottleRocket1 = wesanderson::wes_palettes$BottleRocket1
 Zissou1Continuous = wesanderson::wes_palettes$Zissou1Continuous
 Cross = MetBrewer::met.brewer("Cross",return_hex = T)
@@ -70,6 +75,7 @@ cols = list("Reds"=Reds,
             Hokusai1=Hokusai1,
             Tiepolo=Tiepolo,
             Renoir=Renoir,
+            SoftGlow=SoftGlow,
             LedZep=LedZep,
             Morgenstern=Morgenstern,
             OKeeffe2=OKeeffe2,
@@ -131,17 +137,3 @@ get_colour_names = function(){
   return(available_cols[order(available_cols)])
 }
 
-
-
-#' Get an advertisement to maybe show somewhere
-#'
-#' @return HTML
-#' @export
-#'
-#' @examples
-get_ad = function(){
-  adv = '<H3>Do you love your cloud enough to wear it?</H3>
-  <a href="https://www.jdoqocy.com/click-101118824-13080011" target="_top">
-  <img src="https://www.ftjcfx.com/image-101118824-13080011" width="300" height="250" alt="Custom T-Shirts By DesignAShirt" border="0"/></a>'
-  return(adv)
-}

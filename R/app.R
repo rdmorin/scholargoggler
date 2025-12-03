@@ -48,12 +48,11 @@ adjustcolor_v = Vectorize( adjustcolor )
 #'
 #' @examples
 scholarGoggler <- function(...){
-  about_text = paste0(about_text,get_ad())
   ui <- function(request){
     pageWithSidebar(
       titlePanel(title=div(img(src="https://github.com/rdmorin/scholargoggler/raw/main/img/goggler2.png",
                                "Scholar Goggler")),
-                 
+
                  windowTitle="Where scholars go to google themselves"),
       sidebarPanel(
         uiOutput("scholar_name"),
@@ -75,7 +74,7 @@ scholarGoggler <- function(...){
         ),
 
         actionButton("button","Cloud Me"),
-        
+
         sliderInput("range",
                     "Restrict to these dates:",
                     min = 1969,
@@ -161,13 +160,13 @@ scholarGoggler <- function(...){
                   placeholder="tumors,patients,cells"),
         ),
         radioButtons("cloud_type","Visualization type",choices=c("Titles","Journals"),inline=T),
-        
+
         bookmarkButton()
       ),
 
       # Show a plot of the generated distribution
       mainPanel(
-        tabsetPanel(id="main",selected = "About",
+        tabsetPanel(id="main",selected = "Word Cloud",
                     tabPanel("Word Cloud", wordcloud2Output("cloud",width = "1000px", height = "1000px"),downloadButton("Download PNG",outputId= "savecloud")),
                     tabPanel("Alt Text", textOutput("alt")),
                     tabPanel("Tabular result",downloadButton('download',"Download as CSV file"),tableOutput("tabular")),
@@ -178,7 +177,7 @@ scholarGoggler <- function(...){
         hr(),
         h5("About this page:"),
         print("Created and maintained by Ryan Morin (rdmorin@sfu.ca); @morinryan morinryan.bsky.social")
-        
+
       )
   )
   }
@@ -217,10 +216,10 @@ scholarGoggler <- function(...){
         family_words[trunk] = trunk
         family_words[dep] = trunk
       }
-      
+
       clean_id = input$id
       clean_id= str_remove(input$id,".+user=")
-      
+
       pubz=scholar::get_publications(clean_id) %>% filter(!is.na(year))
       max_year = max(pubz$year)
       min_year = min(pubz$year)
@@ -228,7 +227,7 @@ scholarGoggler <- function(...){
       updateSliderInput(session,inputId = "range", min = min_year,max=max_year)
       pubz = pubz %>% dplyr::filter(year > input$range[1], year < input$range[2])
 
-      
+
       titles=pubz$title
       docs <- Corpus(VectorSource(titles))
       docs <- docs %>%
@@ -303,17 +302,17 @@ scholarGoggler <- function(...){
         output$scholar_name = renderText({
           paste("<h3>Current scholar:", scholar_info$name,"</h3>")
         })
-        
+
         output$scholar_h = renderText({
           paste("H index:", scholar_info$h_index)
         })
-        
+
         output$clean_id = renderText({scholar_info$id})
         if(input$rd == "Name"){
           updateTextInput(value = scholar_info$id,inputId="id")
         }
       }
-      
+
     })
 
     make_cloud = reactive({
@@ -381,14 +380,14 @@ scholarGoggler <- function(...){
         }
         output$txt = renderText(txt)
         output$download <- downloadHandler(
-          
+
         filename = function(){
             clean_id = input$id
             clean_id= stringr::str_remove(input$id,".+user=")
             fn= paste0(clean_id,"_words.tsv")
             write_tsv(ai, paste0("./logs/",fn))
             return(fn)
-          }, 
+          },
           content = function(fname){
             write_tsv(ai, fname)
           }
@@ -529,7 +528,7 @@ scholarGoggler <- function(...){
       }
     })
     observeEvent(input$button,{
-      updateTabsetPanel(session,"main",selected="About")
+      #updateTabsetPanel(session,"main",selected="About")
       output$cloud = renderWordcloud2({
         make_cloud()
       })
