@@ -41,11 +41,12 @@ VanGogh3 = MetBrewer::met.brewer("VanGogh3",return_hex = T)
 LedZep = moroncolours::get_moron_pal("ledzep")
 Ponyo = moroncolours::get_moron_pal("ponyo")
 Morinlab = moroncolours::get_moron_pal("clinical","all")
-
+Reds = c("#FF331F","#CC220F","#991A0C","#FF6655","#660F08")
 #Colours for DLBCL genetic subgroups (LymphGen)
 DLBCL = c("EZB-MYC" = "#52000F","EZB" = "#721F0F","EZB-COMP" = "#C7371A","ST2" = "#C41230","ST2-COMP" = "#EC3251","MCD" = "#3B5FAC","MCD-COMP" = "#6787CB","BN2" =  "#7F3293","BN2-COMP" = "#A949C1","N1" = "#55B55E","N1-COMP" = "#7FC787","A53" = "#5b6d8a")
 
-cols = list("HotCold"=HotCold,
+cols = list("Reds"=Reds,
+            "HotCold"=HotCold,
             "BobMarley"=bobmarley,
             "SoftSpectrum"=SoftSpectrum,
             "BoldDecision" = BoldDecision,
@@ -120,7 +121,7 @@ coolor_colour = function(cooler_url){
 #'
 #' @examples
 get_colour_names = function(){
-    available_cols =c("HotCold","SoftSpectrum","BoldDecision","SgtPepper","Pongal","Zissou1Continuous","BottleRocket1",
+    available_cols =c("Reds","HotCold","SoftSpectrum","BoldDecision","SgtPepper","Pongal","Zissou1Continuous","BottleRocket1",
                       "LedZep","SuperApe","BobMarley","frozen","barbie","dune",
 			                "austinpowers","Ponyo","tron","Tsimshian","Tam",
                       "warhol","vangogh","VanGogh2","Cross","Pillement","VanGogh3",
