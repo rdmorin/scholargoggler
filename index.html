@@ -1,216 +1,207 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ScholarGoggler Word Clouds</title>
-<style>
-body { font-family: Arial, sans-serif; margin: 40px; }
-table { border-collapse: collapse; }
-td, th { padding: 6px 10px; border: 1px solid #ccc; }
-th { background: #eee; }
-</style>
+  <meta charset="utf-8">
+  <title>ScholarGoggler Slideshow</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f7f7f7;
+    }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.2em;
+    }
+    p.toplinks {
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    input[type="number"] {
+      width: 70px;
+      padding: 4px;
+    }
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .viewer {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    iframe {
+      width: 100%;
+      height: 78vh;
+      border: none;
+      background: white;
+    }
+    .caption {
+      padding: 10px 14px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+      font-size: 14px;
+    }
+    .meta {
+      color: #444;
+      margin-top: 4px;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
-<h1>ScholarGoggler Word Clouds</h1>
-<table>
-<tr>
-<th>Scholar</th>
-<th>Shape</th>
-<th>Theme</th>
-<th>Font</th>
-<th>Scale</th>
-<th>Background</th>
-<th>Rotation</th>
-<th>Link</th>
-</tr>
+  <h1>ScholarGoggler Slideshow</h1>
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>blob1</td>
-<td>Colorado</td>
-<td>Trebuchet MS</td>
-<td>0.6</td>
-<td>black</td>
-<td>90</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_blob1_Colorado_Trebuchet MS_0.6_black_90_wordcloud.html">view</a></td>
-</tr>
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>blob1</td>
-<td>vangogh</td>
-<td>Klee</td>
-<td>0.6</td>
-<td>black</td>
-<td>90</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_blob1_vangogh_Klee_0.6_black_90_wordcloud.html">view</a></td>
-</tr>
+  <div class="controls">
+    <button onclick="prevSlide()">Previous</button>
+    <button onclick="togglePlay()" id="playBtn">Pause</button>
+    <button onclick="nextSlide()">Next</button>
+    <button onclick="reshuffle()">Shuffle Now</button>
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>box</td>
-<td>DLBCL</td>
-<td>Verdana</td>
-<td>0.6</td>
-<td>black</td>
-<td>none</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_box_DLBCL_Verdana_0.6_black_none_wordcloud.html">view</a></td>
-</tr>
+    <label>
+      <input id="shuffleMode" type="checkbox" checked>
+      Shuffle mode
+    </label>
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>box</td>
-<td>Renoir</td>
-<td>Trebuchet MS</td>
-<td>0.6</td>
-<td>black</td>
-<td>45</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_box_Renoir_Trebuchet MS_0.6_black_45_wordcloud.html">view</a></td>
-</tr>
+    <label>
+      Seconds per slide:
+      <input id="delayInput" type="number" min="1" value="4">
+    </label>
+    <button onclick="applyDelay()">Apply</button>
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>circle</td>
-<td>SoftSpectrum</td>
-<td>Klee</td>
-<td>0.6</td>
-<td>black</td>
-<td>none</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_circle_SoftSpectrum_Klee_0.6_black_none_wordcloud.html">view</a></td>
-</tr>
+    <span id="status"></span>
+  </div>
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>circle</td>
-<td>SoftSpectrum</td>
-<td>Klee</td>
-<td>0.9</td>
-<td>black</td>
-<td>some</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_circle_SoftSpectrum_Klee_0.9_black_some_wordcloud.html">view</a></td>
-</tr>
+  <div class="viewer">
+    <iframe id="previewFrame" src=""></iframe>
+    <div class="caption">
+      <div><strong id="captionText"></strong></div>
+      <div class="meta">
+        <a id="fileLink" href="#" target="_blank">Open this file directly</a>
+      </div>
+    </div>
+  </div>
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>diamond</td>
-<td>barbie</td>
-<td>Optima</td>
-<td>0.6</td>
-<td>black</td>
-<td>45</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_diamond_barbie_Optima_0.6_black_45_wordcloud.html">view</a></td>
-</tr>
+  <script>
+    const originalSlides = [{"file": "html/Anne_Oeldorf-Hirsch_X5vHQDsAAAAJ_box_doctorwho_Arial_0.9_black_some_wordcloud.html", "label": "Anne Oeldorf-Hirsch | box | doctorwho | Arial | scale 0.9 | bg black | rot some"}, {"file": "html/Anne_Oeldorf-Hirsch_X5vHQDsAAAAJ_circle_BoldDecision_Tahoma_0.3_black_none_wordcloud.html", "label": "Anne Oeldorf-Hirsch | circle | BoldDecision | Tahoma | scale 0.3 | bg black | rot none"}, {"file": "html/Anne_Oeldorf-Hirsch_X5vHQDsAAAAJ_circle_dune_Optima_0.9_transparent_ridiculous_wordcloud.html", "label": "Anne Oeldorf-Hirsch | circle | dune | Optima | scale 0.9 | bg transparent | rot ridiculous"}, {"file": "html/Anne_Oeldorf-Hirsch_X5vHQDsAAAAJ_diamond_SoftSpectrum_Tahoma_0.9_transparent_45_wordcloud.html", "label": "Anne Oeldorf-Hirsch | diamond | SoftSpectrum | Tahoma | scale 0.9 | bg transparent | rot 45"}, {"file": "html/Anne_Oeldorf-Hirsch_X5vHQDsAAAAJ_diamond_Tsimshian_Klee_0.9_black_45_wordcloud.html", "label": "Anne Oeldorf-Hirsch | diamond | Tsimshian | Klee | scale 0.9 | bg black | rot 45"}, {"file": "html/Anne_Oeldorf-Hirsch_X5vHQDsAAAAJ_poop_austinpowers_Helvetica_0.9_transparent_90_wordcloud.html", "label": "Anne Oeldorf-Hirsch | poop | austinpowers | Helvetica | scale 0.9 | bg transparent | rot 90"}, {"file": "html/Anne_Oeldorf-Hirsch_X5vHQDsAAAAJ_trapezoid_tron_Klee_0.9_white_ridiculous_wordcloud.html", "label": "Anne Oeldorf-Hirsch | trapezoid | tron | Klee | scale 0.9 | bg white | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_blob1_LedZep_Courier_0.7_white_90_wordcloud.html", "label": "Donna M. MacCallum | blob1 | LedZep | Courier | scale 0.7 | bg white | rot 90"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_box_BobMarley_Trebuchet%20MS_0.7_white_45_wordcloud.html", "label": "Donna M. MacCallum | box | BobMarley | Trebuchet MS | scale 0.7 | bg white | rot 45"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_box_Klimt_Helvetica_0.7_transparent_ridiculous_wordcloud.html", "label": "Donna M. MacCallum | box | Klimt | Helvetica | scale 0.7 | bg transparent | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_box_Klimt_Verdana_0.7_transparent_45_wordcloud.html", "label": "Donna M. MacCallum | box | Klimt | Verdana | scale 0.7 | bg transparent | rot 45"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_box_Renoir_Optima_0.7_transparent_some_wordcloud.html", "label": "Donna M. MacCallum | box | Renoir | Optima | scale 0.7 | bg transparent | rot some"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_cat_Moreau_AppleGothic_0.7_transparent_ridiculous_wordcloud.html", "label": "Donna M. MacCallum | cat | Moreau | AppleGothic | scale 0.7 | bg transparent | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_cat_Tam_Courier_0.6_white_some_wordcloud.html", "label": "Donna M. MacCallum | cat | Tam | Courier | scale 0.6 | bg white | rot some"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_circle_BottleRocket1_Helvetica_0.7_white_ridiculous_wordcloud.html", "label": "Donna M. MacCallum | circle | BottleRocket1 | Helvetica | scale 0.7 | bg white | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_circle_Klimt_Courier_0.6_transparent_ridiculous_wordcloud.html", "label": "Donna M. MacCallum | circle | Klimt | Courier | scale 0.6 | bg transparent | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_circle_Pillement_Times_0.7_transparent_90_wordcloud.html", "label": "Donna M. MacCallum | circle | Pillement | Times | scale 0.7 | bg transparent | rot 90"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_diamond_Cross_Tahoma_0.7_black_90_wordcloud.html", "label": "Donna M. MacCallum | diamond | Cross | Tahoma | scale 0.7 | bg black | rot 90"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_diamond_dune_Tahoma_0.7_white_90_wordcloud.html", "label": "Donna M. MacCallum | diamond | dune | Tahoma | scale 0.7 | bg white | rot 90"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_droplet_Pongal_Klee_0.7_black_none_wordcloud.html", "label": "Donna M. MacCallum | droplet | Pongal | Klee | scale 0.7 | bg black | rot none"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_hyperbolic_Homer1_Arial_0.7_white_some_wordcloud.html", "label": "Donna M. MacCallum | hyperbolic | Homer1 | Arial | scale 0.7 | bg white | rot some"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_pig_doctorwho_Courier_0.7_white_ridiculous_wordcloud.html", "label": "Donna M. MacCallum | pig | doctorwho | Courier | scale 0.7 | bg white | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_pinetree_HandE_Times_0.7_black_90_wordcloud.html", "label": "Donna M. MacCallum | pinetree | HandE | Times | scale 0.7 | bg black | rot 90"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_poop_BoldDecision_Optima_0.7_white_ridiculous_wordcloud.html", "label": "Donna M. MacCallum | poop | BoldDecision | Optima | scale 0.7 | bg white | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_puzzle_dune_Klee_0.7_transparent_45_wordcloud.html", "label": "Donna M. MacCallum | puzzle | dune | Klee | scale 0.7 | bg transparent | rot 45"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_puzzle_HandE_Courier_0.7_transparent_45_wordcloud.html", "label": "Donna M. MacCallum | puzzle | HandE | Courier | scale 0.7 | bg transparent | rot 45"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_star8_HandE_Verdana_0.7_white_45_wordcloud.html", "label": "Donna M. MacCallum | star8 | HandE | Verdana | scale 0.7 | bg white | rot 45"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_star8_LedZep_Optima_0.7_transparent_45_wordcloud.html", "label": "Donna M. MacCallum | star8 | LedZep | Optima | scale 0.7 | bg transparent | rot 45"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_star8_Pongal_Times_0.7_transparent_none_wordcloud.html", "label": "Donna M. MacCallum | star8 | Pongal | Times | scale 0.7 | bg transparent | rot none"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_star8_VanGogh2_Courier_0.6_white_some_wordcloud.html", "label": "Donna M. MacCallum | star8 | VanGogh2 | Courier | scale 0.6 | bg white | rot some"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_trapezoid_dune_Helvetica_0.7_transparent_some_wordcloud.html", "label": "Donna M. MacCallum | trapezoid | dune | Helvetica | scale 0.7 | bg transparent | rot some"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_triangle_autumn_Klee_0.7_black_ridiculous_wordcloud.html", "label": "Donna M. MacCallum | triangle | autumn | Klee | scale 0.7 | bg black | rot ridiculous"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_triangle_Klimt_Luminari_0.7_white_90_wordcloud.html", "label": "Donna M. MacCallum | triangle | Klimt | Luminari | scale 0.7 | bg white | rot 90"}, {"file": "html/Donna_M._MacCallum_hQjgBSgAAAAJ_triangle_Tsimshian_Courier_0.7_black_45_wordcloud.html", "label": "Donna M. MacCallum | triangle | Tsimshian | Courier | scale 0.7 | bg black | rot 45"}, {"file": "html/Elodie_Lafont_2ZoLzg4AAAAJ_circle_white-on-black_Times_0.9_transparent_none_wordcloud.html", "label": "Elodie Lafont | circle | white-on-black | Times | scale 0.9 | bg transparent | rot none"}, {"file": "html/Elodie_Lafont_2ZoLzg4AAAAJ_puzzle_Renoir_Arial_0.7_transparent_ridiculous_wordcloud.html", "label": "Elodie Lafont | puzzle | Renoir | Arial | scale 0.7 | bg transparent | rot ridiculous"}, {"file": "html/Elodie_Lafont_2ZoLzg4AAAAJ_sun_VanGogh2_Tahoma_0.9_white_45_wordcloud.html", "label": "Elodie Lafont | sun | VanGogh2 | Tahoma | scale 0.9 | bg white | rot 45"}, {"file": "html/Elodie_Lafont_2ZoLzg4AAAAJ_triangle_Renoir_Verdana_0.7_black_45_wordcloud.html", "label": "Elodie Lafont | triangle | Renoir | Verdana | scale 0.7 | bg black | rot 45"}, {"file": "html/Furqan_A._Shah_RJsh1_YAAAAJ_box_Tiepolo_Times_0.8_black_45_wordcloud.html", "label": "Furqan A. Shah RJsh1 | box | Tiepolo | Times | scale 0.8 | bg black | rot 45"}, {"file": "html/Furqan_A._Shah_RJsh1_YAAAAJ_pentagon_Pillement_AppleGothic_0.8_transparent_45_wordcloud.html", "label": "Furqan A. Shah RJsh1 | pentagon | Pillement | AppleGothic | scale 0.8 | bg transparent | rot 45"}, {"file": "html/Furqan_A._Shah_RJsh1_YAAAAJ_triangle-forward_Reds_Courier_0.8_black_ridiculous_wordcloud.html", "label": "Furqan A. Shah RJsh1 | triangle-forward | Reds | Courier | scale 0.8 | bg black | rot ridiculous"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_box_frozen_Courier_0.4_black_90_wordcloud.html", "label": "Helen Amanda Fricker | box | frozen | Courier | scale 0.4 | bg black | rot 90"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_box_frozen_Courier_0.4_transparent_45_wordcloud.html", "label": "Helen Amanda Fricker | box | frozen | Courier | scale 0.4 | bg transparent | rot 45"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_circle_frozen_Courier_0.3_white_some_wordcloud.html", "label": "Helen Amanda Fricker | circle | frozen | Courier | scale 0.3 | bg white | rot some"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_circle_frozen_Optima_0.4_white_45_wordcloud.html", "label": "Helen Amanda Fricker | circle | frozen | Optima | scale 0.4 | bg white | rot 45"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_droplet_frozen_Optima_0.4_black_90_wordcloud.html", "label": "Helen Amanda Fricker | droplet | frozen | Optima | scale 0.4 | bg black | rot 90"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_pentagon_Hokusai1_Klee_0.4_white_90_wordcloud.html", "label": "Helen Amanda Fricker | pentagon | Hokusai1 | Klee | scale 0.4 | bg white | rot 90"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_pig_frozen_Arial_0.4_white_45_wordcloud.html", "label": "Helen Amanda Fricker | pig | frozen | Arial | scale 0.4 | bg white | rot 45"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_pig_frozen_Klee_0.4_transparent_some_wordcloud.html", "label": "Helen Amanda Fricker | pig | frozen | Klee | scale 0.4 | bg transparent | rot some"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_poop_frozen_Trebuchet%20MS_0.4_black_some_wordcloud.html", "label": "Helen Amanda Fricker | poop | frozen | Trebuchet MS | scale 0.4 | bg black | rot some"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_puzzle_frozen_Times_0.3_white_ridiculous_wordcloud.html", "label": "Helen Amanda Fricker | puzzle | frozen | Times | scale 0.3 | bg white | rot ridiculous"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_triangle_frozen_Courier_0.4_black_none_wordcloud.html", "label": "Helen Amanda Fricker | triangle | frozen | Courier | scale 0.4 | bg black | rot none"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_triangle_frozen_Trebuchet%20MS_0.4_white_90_wordcloud.html", "label": "Helen Amanda Fricker | triangle | frozen | Trebuchet MS | scale 0.4 | bg white | rot 90"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_triangle_frozen_Verdana_0.3_white_ridiculous_wordcloud.html", "label": "Helen Amanda Fricker | triangle | frozen | Verdana | scale 0.3 | bg white | rot ridiculous"}, {"file": "html/Helen_Amanda_Fricker_5prTIdoAAAAJ_triangle-forward_HandE_Tahoma_0.4_black_none_wordcloud.html", "label": "Helen Amanda Fricker | triangle-forward | HandE | Tahoma | scale 0.4 | bg black | rot none"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_blob1_HotCold_Helvetica_0.5_transparent_45_wordcloud.html", "label": "Jeremy R. Manning | blob1 | HotCold | Helvetica | scale 0.5 | bg transparent | rot 45"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_box_Tam_AppleGothic_0.9_black_45_wordcloud.html", "label": "Jeremy R. Manning | box | Tam | AppleGothic | scale 0.9 | bg black | rot 45"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_brain_picasso_Courier_0.4_black_90_wordcloud.html", "label": "Jeremy R. Manning | brain | picasso | Courier | scale 0.4 | bg black | rot 90"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_cat_Moreau_Optima_0.5_white_some_wordcloud.html", "label": "Jeremy R. Manning | cat | Moreau | Optima | scale 0.5 | bg white | rot some"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_diamond_VanGogh3_AppleGothic_0.2_black_some_wordcloud.html", "label": "Jeremy R. Manning | diamond | VanGogh3 | AppleGothic | scale 0.2 | bg black | rot some"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_droplet_BoldDecision_Verdana_0.5_transparent_ridiculous_wordcloud.html", "label": "Jeremy R. Manning | droplet | BoldDecision | Verdana | scale 0.5 | bg transparent | rot ridiculous"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_fish_Ponyo_AppleGothic_0.5_white_45_wordcloud.html", "label": "Jeremy R. Manning | fish | Ponyo | AppleGothic | scale 0.5 | bg white | rot 45"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_poop_Zissou1Continuous_Courier_0.4_black_90_wordcloud.html", "label": "Jeremy R. Manning | poop | Zissou1Continuous | Courier | scale 0.4 | bg black | rot 90"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_puzzle_Tiepolo_Verdana_0.5_white_90_wordcloud.html", "label": "Jeremy R. Manning | puzzle | Tiepolo | Verdana | scale 0.5 | bg white | rot 90"}, {"file": "html/Jeremy_R._Manning_hskTzvcAAAAJ_triangle_HandE_Courier_0.5_white_90_wordcloud.html", "label": "Jeremy R. Manning | triangle | HandE | Courier | scale 0.5 | bg white | rot 90"}, {"file": "html/Margaret_Anne_G._Hinkle_GXbwdwUAAAAJ_box_BobMarley_Luminari_0.8_white_90_wordcloud.html", "label": "Margaret Anne G. Hinkle | box | BobMarley | Luminari | scale 0.8 | bg white | rot 90"}, {"file": "html/Margaret_Anne_G._Hinkle_GXbwdwUAAAAJ_cat_barbie_Tahoma_0.8_white_90_wordcloud.html", "label": "Margaret Anne G. Hinkle | cat | barbie | Tahoma | scale 0.8 | bg white | rot 90"}, {"file": "html/Margaret_Anne_G._Hinkle_GXbwdwUAAAAJ_circle_Tsimshian_Optima_0.8_white_90_wordcloud.html", "label": "Margaret Anne G. Hinkle | circle | Tsimshian | Optima | scale 0.8 | bg white | rot 90"}, {"file": "html/Margaret_Anne_G._Hinkle_GXbwdwUAAAAJ_diamond_Homer1_AppleGothic_0.8_white_90_wordcloud.html", "label": "Margaret Anne G. Hinkle | diamond | Homer1 | AppleGothic | scale 0.8 | bg white | rot 90"}, {"file": "html/Margaret_Anne_G._Hinkle_GXbwdwUAAAAJ_fish_white-on-black_Courier_0.8_transparent_90_wordcloud.html", "label": "Margaret Anne G. Hinkle | fish | white-on-black | Courier | scale 0.8 | bg transparent | rot 90"}, {"file": "html/Margaret_Anne_G._Hinkle_GXbwdwUAAAAJ_poop_autumn_Courier_0.8_transparent_some_wordcloud.html", "label": "Margaret Anne G. Hinkle | poop | autumn | Courier | scale 0.8 | bg transparent | rot some"}, {"file": "html/Michael_Kiley_gpRruBgAAAAJ_droplet_Morgenstern_Arial_0.8_transparent_45_wordcloud.html", "label": "Michael Kiley | droplet | Morgenstern | Arial | scale 0.8 | bg transparent | rot 45"}, {"file": "html/Michael_Kiley_gpRruBgAAAAJ_poop_Pillement_Times_0.8_white_90_wordcloud.html", "label": "Michael Kiley | poop | Pillement | Times | scale 0.8 | bg white | rot 90"}, {"file": "html/Michael_Kiley_gpRruBgAAAAJ_triangle_Tam_Klee_0.8_transparent_none_wordcloud.html", "label": "Michael Kiley | triangle | Tam | Klee | scale 0.8 | bg transparent | rot none"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_box_doctorwho_Klee_0.8_transparent_45_wordcloud.html", "label": "Muneyoshi Ichikawa | box | doctorwho | Klee | scale 0.8 | bg transparent | rot 45"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_box_VanGogh3_Trebuchet%20MS_0.9_transparent_ridiculous_wordcloud.html", "label": "Muneyoshi Ichikawa | box | VanGogh3 | Trebuchet MS | scale 0.9 | bg transparent | rot ridiculous"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_cat_austinpowers_Tahoma_0.8_white_none_wordcloud.html", "label": "Muneyoshi Ichikawa | cat | austinpowers | Tahoma | scale 0.8 | bg white | rot none"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_circle_Reds_Tahoma_0.6_white_45_wordcloud.html", "label": "Muneyoshi Ichikawa | circle | Reds | Tahoma | scale 0.6 | bg white | rot 45"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_diamond_BoldDecision_Helvetica_0.9_white_45_wordcloud.html", "label": "Muneyoshi Ichikawa | diamond | BoldDecision | Helvetica | scale 0.9 | bg white | rot 45"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_droplet_Colorado_Optima_0.9_transparent_some_wordcloud.html", "label": "Muneyoshi Ichikawa | droplet | Colorado | Optima | scale 0.9 | bg transparent | rot some"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_hyperbolic_Pongal_Arial_0.6_black_some_wordcloud.html", "label": "Muneyoshi Ichikawa | hyperbolic | Pongal | Arial | scale 0.6 | bg black | rot some"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_pentagon_LedZep_Klee_0.9_transparent_some_wordcloud.html", "label": "Muneyoshi Ichikawa | pentagon | LedZep | Klee | scale 0.9 | bg transparent | rot some"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_pinetree_LedZep_Courier_0.9_transparent_45_wordcloud.html", "label": "Muneyoshi Ichikawa | pinetree | LedZep | Courier | scale 0.9 | bg transparent | rot 45"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_triangle_Colorado_Luminari_0.8_white_some_wordcloud.html", "label": "Muneyoshi Ichikawa | triangle | Colorado | Luminari | scale 0.8 | bg white | rot some"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_triangle_frozen_AppleGothic_0.8_black_45_wordcloud.html", "label": "Muneyoshi Ichikawa | triangle | frozen | AppleGothic | scale 0.8 | bg black | rot 45"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_triangle_Tiepolo_Trebuchet%20MS_0.9_white_none_wordcloud.html", "label": "Muneyoshi Ichikawa | triangle | Tiepolo | Trebuchet MS | scale 0.9 | bg white | rot none"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_triangle_white-on-black_Trebuchet%20MS_0.6_transparent_some_wordcloud.html", "label": "Muneyoshi Ichikawa | triangle | white-on-black | Trebuchet MS | scale 0.6 | bg transparent | rot some"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_triangle-forward_doctorwho_Verdana_0.8_white_90_wordcloud.html", "label": "Muneyoshi Ichikawa | triangle-forward | doctorwho | Verdana | scale 0.8 | bg white | rot 90"}, {"file": "html/Muneyoshi_Ichikawa_TuTZNzoAAAAJ_triangle-forward_HotCold_Optima_0.8_transparent_90_wordcloud.html", "label": "Muneyoshi Ichikawa | triangle-forward | HotCold | Optima | scale 0.8 | bg transparent | rot 90"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_blob1_Colorado_Trebuchet%20MS_0.6_black_90_wordcloud.html", "label": "Ryan D. Morin | blob1 | Colorado | Trebuchet MS | scale 0.6 | bg black | rot 90"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_blob1_vangogh_Klee_0.6_black_90_wordcloud.html", "label": "Ryan D. Morin | blob1 | vangogh | Klee | scale 0.6 | bg black | rot 90"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_box_DLBCL_Verdana_0.6_black_none_wordcloud.html", "label": "Ryan D. Morin | box | DLBCL | Verdana | scale 0.6 | bg black | rot none"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_box_Renoir_Trebuchet%20MS_0.6_black_45_wordcloud.html", "label": "Ryan D. Morin | box | Renoir | Trebuchet MS | scale 0.6 | bg black | rot 45"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_circle_SoftSpectrum_Klee_0.6_black_none_wordcloud.html", "label": "Ryan D. Morin | circle | SoftSpectrum | Klee | scale 0.6 | bg black | rot none"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_circle_SoftSpectrum_Klee_0.9_black_some_wordcloud.html", "label": "Ryan D. Morin | circle | SoftSpectrum | Klee | scale 0.9 | bg black | rot some"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_diamond_barbie_Optima_0.6_black_45_wordcloud.html", "label": "Ryan D. Morin | diamond | barbie | Optima | scale 0.6 | bg black | rot 45"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_diamond_SgtPepper_Helvetica_0.6_black_none_wordcloud.html", "label": "Ryan D. Morin | diamond | SgtPepper | Helvetica | scale 0.6 | bg black | rot none"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_droplet_Reds_Helvetica_0.6_black_none_wordcloud.html", "label": "Ryan D. Morin | droplet | Reds | Helvetica | scale 0.6 | bg black | rot none"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_droplet_Tiepolo_Verdana_0.6_black_none_wordcloud.html", "label": "Ryan D. Morin | droplet | Tiepolo | Verdana | scale 0.6 | bg black | rot none"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_head_Homer1_Optima_0.6_black_90_wordcloud.html", "label": "Ryan D. Morin | head | Homer1 | Optima | scale 0.6 | bg black | rot 90"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_lightbulb_LedZep_Helvetica_0.9_black_90_wordcloud.html", "label": "Ryan D. Morin | lightbulb | LedZep | Helvetica | scale 0.9 | bg black | rot 90"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_lightbulb_Morgenstern_Klee_0.6_black_some_wordcloud.html", "label": "Ryan D. Morin | lightbulb | Morgenstern | Klee | scale 0.6 | bg black | rot some"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_pentagon_barbie_Courier_0.9_black_45_wordcloud.html", "label": "Ryan D. Morin | pentagon | barbie | Courier | scale 0.9 | bg black | rot 45"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_pentagon_HandE_Helvetica_0.6_black_90_wordcloud.html", "label": "Ryan D. Morin | pentagon | HandE | Helvetica | scale 0.6 | bg black | rot 90"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_pentagon_HotCold_AppleGothic_0.6_transparent_45_wordcloud.html", "label": "Ryan D. Morin | pentagon | HotCold | AppleGothic | scale 0.6 | bg transparent | rot 45"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_pentagon_Reds_Courier_0.6_black_45_wordcloud.html", "label": "Ryan D. Morin | pentagon | Reds | Courier | scale 0.6 | bg black | rot 45"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_puzzle_VanGogh2_Courier_0.6_white_some_wordcloud.html", "label": "Ryan D. Morin | puzzle | VanGogh2 | Courier | scale 0.6 | bg white | rot some"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_trapezoid_Cross_Trebuchet%20MS_0.6_black_some_wordcloud.html", "label": "Ryan D. Morin | trapezoid | Cross | Trebuchet MS | scale 0.6 | bg black | rot some"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_trapezoid_Reds_Courier_0.6_black_some_wordcloud.html", "label": "Ryan D. Morin | trapezoid | Reds | Courier | scale 0.6 | bg black | rot some"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_trapezoid_Tsimshian_Courier_0.6_white_none_wordcloud.html", "label": "Ryan D. Morin | trapezoid | Tsimshian | Courier | scale 0.6 | bg white | rot none"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_triangle_Cross_Luminari_0.6_transparent_45_wordcloud.html", "label": "Ryan D. Morin | triangle | Cross | Luminari | scale 0.6 | bg transparent | rot 45"}, {"file": "html/Ryan_D._Morin_IDau0mkAAAAJ_triangle_white-on-black_Arial_0.6_black_45_wordcloud.html", "label": "Ryan D. Morin | triangle | white-on-black | Arial | scale 0.6 | bg black | rot 45"}];
+    let slides = [...originalSlides];
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>droplet</td>
-<td>Tiepolo</td>
-<td>Verdana</td>
-<td>0.6</td>
-<td>black</td>
-<td>none</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_droplet_Tiepolo_Verdana_0.6_black_none_wordcloud.html">view</a></td>
-</tr>
+    let current = 0;
+    let playing = true;
+    let delayMs = 4000;
+    let timer = null;
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>head</td>
-<td>Homer1</td>
-<td>Optima</td>
-<td>0.6</td>
-<td>black</td>
-<td>90</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_head_Homer1_Optima_0.6_black_90_wordcloud.html">view</a></td>
-</tr>
+    const frame = document.getElementById("previewFrame");
+    const captionText = document.getElementById("captionText");
+    const fileLink = document.getElementById("fileLink");
+    const status = document.getElementById("status");
+    const playBtn = document.getElementById("playBtn");
+    const shuffleModeCheckbox = document.getElementById("shuffleMode");
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>lightbulb</td>
-<td>LedZep</td>
-<td>Helvetica</td>
-<td>0.9</td>
-<td>black</td>
-<td>90</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_lightbulb_LedZep_Helvetica_0.9_black_90_wordcloud.html">view</a></td>
-</tr>
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>pentagon</td>
-<td>HandE</td>
-<td>Helvetica</td>
-<td>0.6</td>
-<td>black</td>
-<td>90</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_pentagon_HandE_Helvetica_0.6_black_90_wordcloud.html">view</a></td>
-</tr>
+    function resetSlides() {
+      slides = [...originalSlides];
+      if (shuffleModeCheckbox.checked) {
+        shuffleArray(slides);
+      }
+      current = 0;
+    }
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>pentagon</td>
-<td>Reds</td>
-<td>Courier</td>
-<td>0.6</td>
-<td>black</td>
-<td>45</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_pentagon_Reds_Courier_0.6_black_45_wordcloud.html">view</a></td>
-</tr>
+    function render() {
+      if (slides.length === 0) {
+        captionText.textContent = "No word cloud files found.";
+        fileLink.style.display = "none";
+        frame.removeAttribute("src");
+        status.textContent = "";
+        return;
+      }
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>pentagon</td>
-<td>barbie</td>
-<td>Courier</td>
-<td>0.9</td>
-<td>black</td>
-<td>45</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_pentagon_barbie_Courier_0.9_black_45_wordcloud.html">view</a></td>
-</tr>
+      const slide = slides[current];
+      frame.src = slide.file;
+      captionText.textContent = slide.label;
+      fileLink.href = slide.file;
+      fileLink.style.display = "";
+      status.textContent = `Showing ${current + 1} of ${slides.length}`;
+    }
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>puzzle</td>
-<td>VanGogh2</td>
-<td>Courier</td>
-<td>0.6</td>
-<td>white</td>
-<td>some</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_puzzle_VanGogh2_Courier_0.6_white_some_wordcloud.html">view</a></td>
-</tr>
+    function nextSlide() {
+      if (slides.length === 0) return;
+      current = (current + 1) % slides.length;
+      render();
+    }
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>trapezoid</td>
-<td>Cross</td>
-<td>Trebuchet MS</td>
-<td>0.6</td>
-<td>black</td>
-<td>some</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_trapezoid_Cross_Trebuchet MS_0.6_black_some_wordcloud.html">view</a></td>
-</tr>
+    function prevSlide() {
+      if (slides.length === 0) return;
+      current = (current - 1 + slides.length) % slides.length;
+      render();
+    }
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>trapezoid</td>
-<td>Reds</td>
-<td>Courier</td>
-<td>0.6</td>
-<td>black</td>
-<td>some</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_trapezoid_Reds_Courier_0.6_black_some_wordcloud.html">view</a></td>
-</tr>
+    function stopTimer() {
+      if (timer !== null) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
 
-<tr>
-<td>Ryan D. Morin</td>
-<td>triangle</td>
-<td>white-on-black</td>
-<td>Arial</td>
-<td>0.6</td>
-<td>black</td>
-<td>45</td>
-<td><a href="html/Ryan_D._Morin_IDau0mkAAAAJ_triangle_white-on-black_Arial_0.6_black_45_wordcloud.html">view</a></td>
-</tr>
+    function startTimer() {
+      stopTimer();
+      if (playing && slides.length > 1) {
+        timer = setInterval(nextSlide, delayMs);
+      }
+    }
 
-</table>
+    function togglePlay() {
+      playing = !playing;
+      playBtn.textContent = playing ? "Pause" : "Play";
+      startTimer();
+    }
+
+    function applyDelay() {
+      const val = parseInt(document.getElementById("delayInput").value, 10);
+      if (!isNaN(val) && val > 0) {
+        delayMs = val * 1000;
+        startTimer();
+      }
+    }
+
+    function reshuffle() {
+      resetSlides();
+      render();
+      startTimer();
+    }
+
+    shuffleModeCheckbox.addEventListener("change", function() {
+      resetSlides();
+      render();
+      startTimer();
+    });
+
+    resetSlides();
+    render();
+    startTimer();
+  </script>
 </body>
 </html>
