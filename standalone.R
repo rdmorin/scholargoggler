@@ -3,18 +3,26 @@
 # This code produces the Scholar Goggler page
 # This is a simple Shiny app that generates a word cloud based on the titles
 # of articles in a Google Scholar profile
-suppressPackageStartupMessages(require(readr))
-suppressPackageStartupMessages(require(tidyverse))
-suppressPackageStartupMessages(require(htmlwidgets))
-suppressPackageStartupMessages(require(webshot2))
-suppressPackageStartupMessages(require(moroncolours))
-suppressPackageStartupMessages(require(scholar))
-suppressPackageStartupMessages(require(wordcloud2))
-suppressPackageStartupMessages(require(tm))
-suppressPackageStartupMessages(require(MetBrewer))
-require(wesanderson)
-suppressPackageStartupMessages(require(optparse))
-suppressPackageStartupMessages(require(scholargoggler))
+quiet_early <- any(commandArgs(trailingOnly = TRUE) == "--quiet")
+load_pkg <- function(pkg){
+  if(quiet_early){
+    suppressWarnings(suppressPackageStartupMessages(require(pkg, character.only = TRUE, quietly = TRUE)))
+  }else{
+    suppressPackageStartupMessages(require(pkg, character.only = TRUE))
+  }
+}
+load_pkg("readr")
+load_pkg("tidyverse")
+load_pkg("htmlwidgets")
+load_pkg("webshot2")
+load_pkg("moroncolours")
+load_pkg("scholar")
+load_pkg("wordcloud2")
+load_pkg("tm")
+load_pkg("MetBrewer")
+load_pkg("wesanderson")
+load_pkg("optparse")
+load_pkg("scholargoggler")
 
 #some global variables and settings
 repair_words = c("EZH2","MYC","T-cell",
@@ -30,22 +38,52 @@ year_min = 1969
 year_max = 2025
 colour_options=c("white-on-black",get_colour_names())
 
-font_choices=c("Helvetica","AppleGothic","Optima","Luminari",
-          "Courier","Klee","Arial","Tahoma",
-          "Times","Trebuchet MS","Verdana")
+font_choices=c(rep("Helvetica", 5),
+               rep("AppleGothic", 5),
+               rep("Optima", 5),
+               "Luminari",
+               rep("Courier", 5),
+               rep("Klee", 5),
+               rep("Arial", 5),
+               rep("Tahoma", 5),
+               "Times",
+               rep("Trebuchet MS", 5),
+               rep("Verdana", 5))
 
-rotation_choices=c("No Rotation",
+rotation_choices=c(rep("No Rotation", 3),
           "A bit of rotation",
           "Ridiculous Rotation",
-          "45 degrees",
-          "90 degrees")
+          rep("45 degrees", 5),
+          rep("90 degrees", 5))
 
-shape_choices=c("circle",
-          "diamond","sicklecell","hyperbolic",
-          "triangle-forward",
-          "triangle",
-          "pentagon",
-          "star","brain","droplet")
+shape_choices=c(
+  rep("blob1", 5),
+  rep("box", 5),
+  "cat",
+  "head",
+  rep("circle", 7),
+  rep("trapezoid", 5),
+  rep("diamond", 5),
+  "mushroom",
+  "lightbulb",
+  "fish",
+  "hyperbolic",
+  rep("triangle-forward", 3),
+  rep("triangle", 5),
+  "pacman",
+  rep("pentagon", 5),
+  "pinetree",
+  "pig",
+  #"poop",
+  rep("puzzle", 5),
+  "seaturtle",
+  "star8",
+  "sun",
+  #"star",
+  "brain",
+  #rep("brain",12),
+  rep("droplet", 5)
+)
 
 
 
@@ -64,14 +102,17 @@ option_list = list(
   make_option(c("--font_family"), action="store", type="character", default=NULL,  
               help=paste(font_choices,collapse=",")),
   make_option("--year_min", action="store", type="integer", default=1980, help="Cutoff for oldest articles"),
-  make_option("--year_max", action="store", type="integer", default=2025, help="Cutoff for newest articles"),
-  make_option("--zoomout", action="store", type="numeric", default=0.9, help="Reduce to zoom out, increase to zoom in")
+  make_option("--year_max", action="store", type="integer", default=2026, help="Cutoff for newest articles"),
+  make_option("--zoomout", action="store", type="numeric", default=0.5, help="Reduce to zoom out, increase to zoom in"),
+  make_option("--quiet", action="store_true", default=FALSE, help="Reduce console output")
 )
 
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 if(is.null(opt$bg_colour)){
-  opt$bg_colour = sample(c("black","white","transparent"),1)
+  white_num = 1
+  black_num = 3
+  opt$bg_colour = sample(c(rep("black",black_num), rep("white",white_num), "transparent"),1)
 }
 if(is.null(opt$shape)){
   opt$shape = sample(shape_choices,1)
@@ -83,9 +124,10 @@ if(is.null(opt$colour_scheme)){
   opt$colour_scheme = sample(colour_options,1)
 }
 if(is.null(opt$rotation)){
-  opt$rotation = sample(c("some","none","ridiculous","45","90"),1)
+  opt$rotation = sample(c("some","45","90","90","45","none","ridiculous","45","90"),1)
 }
-print(opt)
+QUIET <- opt$quiet
+if(!QUIET){ print(opt) }
 scholar_cloud <- function(scholar_id=NULL,
                        last_name=NULL,
                        first_name=NULL,
@@ -105,18 +147,35 @@ scholar_cloud <- function(scholar_id=NULL,
                        dropwords = "some",
                        rotation
                        ){
-  print(paste("LAST:",last_name,"FIRST:",first_name,"ID:",scholar_id))
+  if(!QUIET){ print(paste("LAST:",last_name,"FIRST:",first_name,"ID:",scholar_id)) }
     if(is.null(scholar_id)){
       if(is.null(last_name) & is.null(first_name)){
         stop("Must provide first/last name if ID is not provided")
       }
       scholar_id = get_scholar_id(last_name = last_name,first_name=first_name)
       scholar_name = paste(first_name,last_name)
-      print(paste("NAME:",scholar_name))
+      if(!QUIET){ print(paste("NAME:",scholar_name)) }
     }else{
-      print("GOT HERE, ID provided")
+      if(!QUIET){ print("GOT HERE, ID provided") }
       scholar_obj = scholar::get_profile(scholar_id)
       scholar_name = str_replace_all(scholar_obj$name,"\\s+","_")
+    }
+
+    if(QUIET){
+      summary_line = paste(
+        "cloud",
+        paste0("id=",scholar_id),
+        paste0("name=",scholar_name),
+        paste0("years=",year_min,"-",year_max),
+        paste0("shape=",shape),
+        paste0("scheme=",colour_scheme),
+        paste0("font=",font_family),
+        paste0("zoom=",zoomout),
+        paste0("bg=",bgcolour),
+        paste0("rotation=",rotation),
+        sep=" "
+      )
+      cat(summary_line, "\n")
     }
 
     ai = count_title_words(scholar_id=scholar_id,
@@ -127,11 +186,14 @@ scholar_cloud <- function(scholar_id=NULL,
                            max_freq)
     #remove any dropwords specified explicitly  
     ai = dplyr::filter(ai,!word %in% dropwords)
-    message("making cloud")
+    if(!QUIET){ message("making cloud") }
     widget = make_cloud(ai,bgcolour,colour_scheme,dillute,font_family,shape,ellipticity,zoomout,rotation)
-    print(widget)
+    if(!QUIET){ print(widget) }
     
-    save_cloud(widget,scholar_name,shape,colour_scheme,font_family,zoomout,bgcolour,rotation,ai)
+    filename = save_cloud(widget,scholar_name,shape,colour_scheme,font_family,zoomout,bgcolour,rotation,ai,scholar_id)
+    if(!QUIET){
+      message(paste("Saved:",filename))
+    }
 }
 
 
@@ -170,11 +232,21 @@ count_title_words = function(scholar_id, depluralize, year_min, year_max,min_fre
   titles=pubz$title
   
   docs <- Corpus(VectorSource(titles))
-  docs <- docs %>%
-    tm_map(removePunctuation,preserve_intra_word_dashes=TRUE) %>%
-    tm_map(stripWhitespace)
-  docs <- suppressWarnings(tm_map(docs, content_transformer(tolower)))
-  docs <- suppressWarnings(tm_map(docs, removeWords, stopwords("english")))
+  if(QUIET){
+    docs <- suppressWarnings(
+      docs %>%
+        tm_map(removePunctuation,preserve_intra_word_dashes=TRUE) %>%
+        tm_map(stripWhitespace)
+    )
+    docs <- suppressWarnings(tm_map(docs, content_transformer(tolower)))
+    docs <- suppressWarnings(tm_map(docs, removeWords, stopwords("english")))
+  }else{
+    docs <- docs %>%
+      tm_map(removePunctuation,preserve_intra_word_dashes=TRUE) %>%
+      tm_map(stripWhitespace)
+    docs <- suppressWarnings(tm_map(docs, content_transformer(tolower)))
+    docs <- suppressWarnings(tm_map(docs, removeWords, stopwords("english")))
+  }
   dtm <- TermDocumentMatrix(docs)
   matrix <- as.matrix(dtm)
   words <- sort(rowSums(matrix),decreasing=TRUE)
@@ -227,10 +299,10 @@ make_cloud = function(ai,bgcolour,colour_scheme,dillute,font_family,shape,ellipt
   }else{
     cols = scholargoggler::get_all_colours()
     if(colour_scheme %in% names(cols)){
-      print(colour_scheme)
+      if(!QUIET){ print(colour_scheme) }
       colour = sample(cols[[colour_scheme]],nrow(ai),replace=T)
     }else{
-      print(colour_scheme)
+      if(!QUIET){ print(colour_scheme) }
       colour = sample(get_moron_pal(colour_scheme),nrow(ai),replace=T)
     }
     ai$colour = colour
@@ -244,22 +316,31 @@ make_cloud = function(ai,bgcolour,colour_scheme,dillute,font_family,shape,ellipt
       mutate(colour=adjustcolor_v( colour, alpha.f = percentile))
     colour = unname(ai$colour)
   }
-  print(paste("WORDS:",nrow(ai)))
-  print(head(ai))
-  print(tail(ai))
+  if(!QUIET){
+    print(paste("WORDS:",nrow(ai)))
+    print(head(ai))
+    print(tail(ai))
+  }
   
+  do_cloud <- function(expr){
+    if(QUIET){
+      suppressMessages(suppressWarnings(expr))
+    }else{
+      expr
+    }
+  }
   if(rotation=="ridiculous"){
     rotateRatio = 1
-    wordcloud2(ai,
+    do_cloud(wordcloud2(ai,
              fontFamily = font_family,
              backgroundColor=bgcolour,
              color=colour,
              size = zoomout,
              rotateRatio = rotateRatio,
              shape=shape,
-             ellipticity=ellipticity)
+             ellipticity=ellipticity))
   }else if(rotation=="some"){
-    wordcloud2(ai,
+    do_cloud(wordcloud2(ai,
                fontFamily = font_family,
                backgroundColor=bgcolour,
                color=colour,
@@ -267,9 +348,9 @@ make_cloud = function(ai,bgcolour,colour_scheme,dillute,font_family,shape,ellipt
                minRotation=pi/5,
                maxRotation=pi/7,
                shape=shape,
-               ellipticity=ellipticity)
+               ellipticity=ellipticity))
   }else if(rotation=="none"){
-    wordcloud2(ai,
+    do_cloud(wordcloud2(ai,
                fontFamily = font_family,
                backgroundColor=bgcolour,
                color=colour,
@@ -277,9 +358,9 @@ make_cloud = function(ai,bgcolour,colour_scheme,dillute,font_family,shape,ellipt
                minRotation=0,
                maxRotation=0,
                shape=shape,
-               ellipticity=ellipticity)
+               ellipticity=ellipticity))
   }else if(rotation=="45"){
-    wordcloud2(ai,
+    do_cloud(wordcloud2(ai,
                fontFamily = font_family,
                backgroundColor=bgcolour,
                color=colour,
@@ -287,9 +368,9 @@ make_cloud = function(ai,bgcolour,colour_scheme,dillute,font_family,shape,ellipt
                minRotation=pi/4.01,
                maxRotation=pi/3.99,
                shape=shape,
-               ellipticity=ellipticity)
+               ellipticity=ellipticity))
   }else if(rotation=="90"){
-    wordcloud2(ai,
+    do_cloud(wordcloud2(ai,
                fontFamily = font_family,
                backgroundColor=bgcolour,
                color=colour,
@@ -297,7 +378,7 @@ make_cloud = function(ai,bgcolour,colour_scheme,dillute,font_family,shape,ellipt
                minRotation=pi/2.01,
                maxRotation=pi/1.99,
                shape=shape,
-               ellipticity=ellipticity)
+               ellipticity=ellipticity))
   }
   
 }  
@@ -328,15 +409,23 @@ save_alt <- function(ai,shape,bgcolour,file_name,n_words=30){
   cat(alttext,file=file_name,append = F)
 }
 
-save_cloud <- function(cloud_widget,prefix,shape,colour_scheme,font_family,zoomout,bgcolour,rotation,ai){
-  message("saving cloud")
-  settings = paste(prefix,shape,colour_scheme,font_family,zoomout,bgcolour,rotation,sep="_")
+save_cloud <- function(cloud_widget,prefix,shape,colour_scheme,font_family,zoomout,bgcolour,rotation,ai,scholar_id){
+  if(!QUIET){ message("saving cloud") }
+  safe_id = gsub("[^A-Za-z0-9_-]","",scholar_id)
+  settings = paste(prefix,safe_id,shape,colour_scheme,font_family,zoomout,bgcolour,rotation,sep="_")
   filename = paste0("/Users/rmorin/git/scholargoggler/clouds/",settings,"_wordcloud", '.png')
   saveWidget(cloud_widget, "temp.html", selfcontained = FALSE)
   #webshot("temp.html", delay =3, file = filename, cliprect = c(100,100,800,800),
   #        vwidth=1000,vheight=1000)
-  webshot("temp.html", delay =3, file = filename, cliprect = "viewport",vwidth=1000,vheight=1000)
+  if(QUIET){
+    suppressMessages(suppressWarnings(
+      webshot("temp.html", delay =3, file = filename, cliprect = "viewport",vwidth=1000,vheight=1000)
+    ))
+  }else{
+    webshot("temp.html", delay =3, file = filename, cliprect = "viewport",vwidth=1000,vheight=1000)
+  }
   save_alt(ai,shape,bgcolour,paste0(filename,"_alt.txt"))
+  return(filename)
 }
 
 scholar_cloud(scholar_id=opt$scholar_id,
